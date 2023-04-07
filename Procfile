@@ -1,1 +1,1 @@
-web: gunicorn fyp_management.wsgi --log-file -
+web: gunicorn fyp_management.wsgi
