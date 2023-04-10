@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'notifications',
     'corsheaders',
     'teamMember',
+    "user_management"
 ]
 
 

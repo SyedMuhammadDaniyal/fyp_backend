@@ -42,6 +42,10 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser, BaseModel):
+    SUPERVISOR = "supervisor"
+    STUDENT = "student"
+    PMO = "fyp_panel"
+    
     username = None
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=20)
