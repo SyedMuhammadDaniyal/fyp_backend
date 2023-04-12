@@ -40,6 +40,12 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
         return self.create_user(email, password, **extra_fields)
 
+class department(BaseModel):
+    name = models.CharField(max_length=45, unique=True)
+    hod = models.CharField(max_length=45)
+    
+    def __str__(self):
+        return self.name
 
 class User(AbstractUser, BaseModel):
     SUPERVISOR = "supervisor"
@@ -50,6 +56,7 @@ class User(AbstractUser, BaseModel):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=30)
+    department = models.ForeignKey(department, on_delete=models.RESTRICT)
 
 
     objects = CustomUserManager()
@@ -61,25 +68,16 @@ class fyppanel(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
     facultyid = models.CharField(max_length=45, unique=True)       
     designation = models.CharField(max_length=45)
-
-class department(BaseModel):
-    name = models.CharField(max_length=45, unique=True)
-    hod = models.CharField(max_length=45)
-    
-    def __str__(self):
-        return self.name
     
 
 class supervisor(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
-    name = models.CharField(max_length=45)
     faculty_no = models.CharField(max_length=45, unique=True)
     phone_no = models.CharField(max_length=12)
     field_of_interest = models.CharField(max_length=45)
-    department = models.ForeignKey(department, on_delete=models.RESTRICT, default=False)
-
-    def __str__(self):
-        return self.name
+    
+    # def __str__(self):
+    #     return self.name
 
 
 class project(BaseModel):
@@ -121,3 +119,6 @@ class teamMember(BaseModel):
             MinValueValidator(0)
         ]
     )
+    seatno = models.CharField(max_length=50, unique=True, default=False)
+    enrollmentno = models.CharField(max_length=50, unique=True, default=False)
+    phoneno = models.CharField(max_length=50, unique=True, default=False)
