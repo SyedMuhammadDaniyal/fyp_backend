@@ -82,6 +82,7 @@ class milestone(BaseModel):
     document_submissin_date = models.DateField()
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
+    rubrics = models.JSONField(null=True, blank=True)
     fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
 
 class project(BaseModel):

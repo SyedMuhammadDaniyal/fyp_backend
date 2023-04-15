@@ -15,7 +15,7 @@ from user_management.views import CreateUserView, allusersAPI, updatesupervisorA
 urlpatterns = [
   path('register',RegisterUserAPIView.as_view()),
   path('login', LoginUserApi.as_view()),
-  path('departmentlist',departmentAPI.as_view()),
+  path('departmentcrud',departmentAPI.as_view()),
   path('getfyppanel',getfyppanel),
   path('createnotification',notificationsAPIView.as_view(methods=['post','get'])),
   path('deletenotification/<int:pk>/', notificationsAPIView.as_view(methods=['delete']), name='myapi-delete'),
