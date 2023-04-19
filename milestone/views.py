@@ -125,7 +125,7 @@ class GetAllMilestones(APIView):
             if request.data.get("role") == "supervisor": #hardcode
                 sup = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
                 projects = project.objects.filter(supervisor=sup)
-                print(projects)
+                # print(projects)
                 if projects != None:
                     milestones = milestone.objects.filter(project=projects[0])
                     serializer = milestoneSerializer(milestones, many=True)
@@ -138,7 +138,7 @@ class GetAllMilestones(APIView):
             elif request.data.get("role") == "student": #hardcode
                 tm = teamMember.objects.get(id=request.data.get("id"), deleted_at=None)
                 projects = project.objects.filter(supervisor=tm)
-                print(projects)
+                # print(projects)
                 if projects != None:
                     milestones = milestone.objects.filter(project=projects[0])
                     serializer = milestoneSerializer(milestones, many=True)

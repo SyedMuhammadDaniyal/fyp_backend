@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 class notificationSerializer(serializers.ModelSerializer):
     title = serializers.CharField(required=True)
-    isactive = serializers.BooleanField(default=False)
+    # isactive = serializers.BooleanField(default=False)
     description = serializers.CharField(required=True)
     createdate = serializers.DateField(required=True)
     createtime = serializers.TimeField(required=True)

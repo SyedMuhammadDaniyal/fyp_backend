@@ -85,6 +85,15 @@ class milestone(BaseModel):
     rubrics = models.JSONField(null=True, blank=True)
     fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
 
+class notification(BaseModel):
+    title = models.CharField(max_length=75)
+    isactive = models.BooleanField(default=False)
+    description = models.CharField(max_length=500)
+    createdby = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
+    createdate = models.DateField()
+    createtime = models.TimeField()
+
+
 class project(BaseModel):
     title = models.CharField(max_length=100, unique=True)
     year =  models.CharField(max_length=50, default=False)
@@ -102,15 +111,8 @@ class project(BaseModel):
     supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT)
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
+    notification = models.ManyToManyField(notification)
     # teammember = models.ManyToManyField(teamMember)
-
-class notification(BaseModel):
-    title = models.CharField(max_length=75)
-    isactive = models.BooleanField(default=False)
-    description = models.CharField(max_length=500)
-    createdby = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
-    createdate = models.DateField()
-    createtime = models.TimeField()
 
 
 class teamMember(BaseModel):

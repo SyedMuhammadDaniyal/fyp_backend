@@ -7,39 +7,42 @@ from core.models import project, teamMember
 from rest_framework.decorators import api_view 
 from django.utils import timezone
 from teamMember.serializers import teamMemberSerializer
+# from rest_framework.permissions import IsAuthenticated
+
 # # Create your views here.
 class projectAPIView(APIView):
-        def post(self, request):
-            try:
-                serialize = projectSerializer(data=request.data)
-                if serialize.is_valid():
-                    serialize.save()
-                    return Response(
-                        {
-                        "status": 200,
-                        "message": "Success",
-                        "body": {},
-                        "exception": None 
-                        }
-                    )    
-                else:
-                    return Response(
-                        {
-                        "status": 422,
-                        "message": serialize.errors,
-                        "body":{},
-                        "exception": "some exception"
-                        }
-                    )
-            except Exception as e:
+    # permission_classes = [IsAuthenticated]
+    def post(self, request):
+        try:
+            serialize = projectSerializer(data=request.data)
+            if serialize.is_valid():
+                serialize.save()
                 return Response(
                     {
-                "status": 400,
-                "message": "Bad Request",
-                "body": {},
-                "exception": str(e)
-                }
-            )
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )    
+            else:
+                return Response(
+                    {
+                    "status": 422,
+                    "message": serialize.errors,
+                    "body":{},
+                    "exception": "some exception"
+                    }
+                )
+        except Exception as e:
+            return Response(
+                {
+            "status": 400,
+            "message": "Bad Request",
+            "body": {},
+            "exception": str(e)
+            }
+        )
 
 
 class projectlistAPI(APIView):
