@@ -14,7 +14,7 @@ class teamMemberSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = teamMember
-        fields = ['email','password','name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department']
+        fields = ['id','email','password','name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department']
     
     def create(self, validated_data):
         tm = User.objects.create(
