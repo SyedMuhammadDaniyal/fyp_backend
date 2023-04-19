@@ -4,7 +4,7 @@ from project.views import projectAPIView, projectlistAPI, updateprojectAPI, dele
 from milestone.views import createmilestoneAPI, allmilestoneAPI, updatemilestoneAPI, deletemilestoneAPI, GetAllMilestones
 from supervisor.views import supervisorView
 from department.views import departmentAPI
-from notifications.views import notificationsAPIView
+from notifications.views import createnotificationAPI
 from teamMember.views import RegisterteamMemberAPIView
 from user_management.views import CreateUserView, allusersAPI, updatesupervisorAPI, studentlistAPI, deletesupervisorAPI, updatestudentAPI, deletestudentAPI
 # from rest_framework_simplejwt.views import (
@@ -13,14 +13,9 @@ from user_management.views import CreateUserView, allusersAPI, updatesupervisorA
 # )
 
 urlpatterns = [
-  path('register',RegisterUserAPIView.as_view()),
+  path('registerpmo',RegisterUserAPIView.as_view()),
   path('login', LoginUserApi.as_view()),
   path('departmentcrud',departmentAPI.as_view()),
-  path('getfyppanel',getfyppanel),
-  path('createnotification',notificationsAPIView.as_view(methods=['post','get'])),
-  path('deletenotification/<int:pk>/', notificationsAPIView.as_view(methods=['delete']), name='myapi-delete'),
-  path('updatenotification/<int:pk>/', notificationsAPIView.as_view(methods=['put', 'patch']), name='myapi-update'),
-  path('teamMemberRegister',RegisterteamMemberAPIView.as_view()),
   path('createUser', CreateUserView.as_view()),
   path('alluser/', allusersAPI.as_view()),
   path('updatesupervisor', updatesupervisorAPI.as_view()),
@@ -38,4 +33,5 @@ urlpatterns = [
   path('updatemilestone',updatemilestoneAPI.as_view()),
   path('deletemilestone/<int:pk>', deletemilestoneAPI.as_view()),
   path('getallmilestone', GetAllMilestones.as_view()),
+  path('createnotification',createnotificationAPI.as_view()),
 ]
