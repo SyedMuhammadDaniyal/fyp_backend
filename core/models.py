@@ -76,30 +76,33 @@ class supervisor(BaseModel):
     phone_no = models.CharField(max_length=12)
     field_of_interest = models.CharField(max_length=45)
     
-    # def __str__(self):
-    #     return self.name
-
-
-class project(BaseModel):
-    title = models.CharField(max_length=100, unique=True)
-    batch = models.CharField(max_length=50)
-    grade = models.IntegerField(default=0)
-    description = models.TextField()
-    status = models.CharField(max_length=45,default="initial")
-    domain = models.CharField(max_length=45)
-    no_of_group_members = models.IntegerField(default=5)
-    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT)
-    department = models.ForeignKey(department, on_delete=models.RESTRICT)
-     
 
 class milestone(BaseModel):
     milestone_name = models.CharField(max_length=75,unique=True)
     document_submissin_date = models.DateField()
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
+    rubrics = models.JSONField(null=True, blank=True)
     fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
-    # project = models.ForeignKey(project, on_delete=models.RESTRICT)
 
+class project(BaseModel):
+    title = models.CharField(max_length=100, unique=True)
+    year =  models.CharField(max_length=50, default=False)
+    batch = models.CharField(max_length=50)
+    no_of_group_members = models.IntegerField(default=3,
+            validators=[
+            MaxValueValidator(5),
+            MinValueValidator(1)
+        ]
+    )
+    description = models.TextField()
+    status = models.CharField(max_length=45,default="ongoing")
+    domain = models.CharField(max_length=45)
+    grade = models.IntegerField(default=0)
+    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT)
+    department = models.ForeignKey(department, on_delete=models.RESTRICT)
+    milestone = models.ManyToManyField(milestone)
+    # teammember = models.ManyToManyField(teamMember)
 
 class notification(BaseModel):
     title = models.CharField(max_length=75)
@@ -122,3 +125,4 @@ class teamMember(BaseModel):
     seatno = models.CharField(max_length=50, unique=True, default=False)
     enrollmentno = models.CharField(max_length=50, unique=True, default=False)
     phoneno = models.CharField(max_length=50, unique=True, default=False)
+    project = models.ForeignKey(project, null=True, on_delete=models.RESTRICT)
