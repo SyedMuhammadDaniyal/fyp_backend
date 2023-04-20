@@ -56,6 +56,7 @@ class User(AbstractUser, BaseModel):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=30)
+    phoneno = models.CharField(max_length=50, default=False)
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
 
 
@@ -73,8 +74,8 @@ class fyppanel(BaseModel):
 class supervisor(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
     faculty_no = models.CharField(max_length=45, unique=True)
-    phone_no = models.CharField(max_length=12)
     field_of_interest = models.CharField(max_length=45)
+    designation = models.CharField(max_length=45, default=False)
     
 
 class milestone(BaseModel):
@@ -112,7 +113,6 @@ class project(BaseModel):
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
     notification = models.ManyToManyField(notification)
-    # teammember = models.ManyToManyField(teamMember)
 
 
 class teamMember(BaseModel):
@@ -126,5 +126,4 @@ class teamMember(BaseModel):
     )
     seatno = models.CharField(max_length=50, unique=True, default=False)
     enrollmentno = models.CharField(max_length=50, unique=True, default=False)
-    phoneno = models.CharField(max_length=50, unique=True, default=False)
     project = models.ForeignKey(project, null=True, on_delete=models.RESTRICT)

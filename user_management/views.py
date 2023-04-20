@@ -13,7 +13,7 @@ class CreateUserView(APIView):
             if request.data.get("role") == User.SUPERVISOR:
                 serialize = AddSupervisorSerializer(data=request.data)
                 if serialize.is_valid():
-                    print(request.data)
+                    # print(request.data)
                     serialize.save()
                     return Response(
                         {
@@ -35,7 +35,7 @@ class CreateUserView(APIView):
             elif request.data.get("role") == User.STUDENT:            
                 serialize = teamMemberSerializer(data=request.data)                        
                 if serialize.is_valid():
-                    print(request.data)
+                    # print(request.data)
                     serialize.save()
                     return Response(
                         {
@@ -144,7 +144,7 @@ class updatesupervisorAPI(APIView):
           return Response(       
                 {
                 "status": 404,
-                "message": serialize.errors,
+                "message": "Some e",#serialize.errors
                 "body": {},
                 "exception": str(e) 
                 }
