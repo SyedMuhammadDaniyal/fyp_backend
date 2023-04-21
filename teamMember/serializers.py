@@ -6,11 +6,12 @@ class teamMemberSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     name = serializers.CharField(source='user.name', required=True)
+    phoneno = serializers.CharField(source='user.phoneno', required=True)
     department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
     rollno = serializers.CharField(required=True)
     seatno = serializers.CharField(required=True)
     enrollmentno = serializers.CharField(required=True)
-    phoneno = serializers.CharField(required=True)
+    # phoneno = serializers.CharField(required=True)
     
     class Meta:
         model = teamMember
@@ -21,6 +22,7 @@ class teamMemberSerializer(serializers.ModelSerializer):
         email=validated_data['user']['email'],
         name=validated_data['user']['name'],
         password=validated_data['password'],
+        phoneno = validated_data['user']['phoneno'],
         department = validated_data['user']['department'],
         is_active = False
         )
@@ -33,7 +35,7 @@ class teamMemberSerializer(serializers.ModelSerializer):
         rollno=validated_data['rollno'],
         seatno=validated_data['seatno'],
         enrollmentno=validated_data['enrollmentno'],
-        phoneno=validated_data['phoneno'],
+        # phoneno=validated_data['phoneno'],
         # project =project_instance,        
         # department=department_instance,
         )
@@ -45,15 +47,15 @@ class teamMemberSerializer(serializers.ModelSerializer):
 #         fields = '__all__'
 
 class updateStudentSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source='user.email', read_only=True)
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    name = serializers.CharField(source='user.name', read_only=True)
-    department = serializers.PrimaryKeyRelatedField(source='user.department', read_only=True)
+    # email = serializers.EmailField(source='user.email', read_only=True)
+    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    # name = serializers.CharField(source='user.name', read_only=True)
+    # department = serializers.PrimaryKeyRelatedField(source='user.department', read_only=True)
     rollno = serializers.CharField(required=True)
     seatno = serializers.CharField(required=True)
     enrollmentno = serializers.CharField(required=True)
-    phoneno = serializers.CharField(required=True)
+    # phoneno = serializers.CharField(required=True)
 
     class Meta:
         model = teamMember
-        fields = ['id','email', 'password', 'name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department']
+        fields = ['id','rollno', 'seatno', 'enrollmentno']
