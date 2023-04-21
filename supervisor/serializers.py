@@ -7,14 +7,15 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     name = serializers.CharField(source='user.name', required=True)
+    phoneno = serializers.CharField(source='user.phoneno', required=True)
     department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
     faculty_no = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
-    phone_no = serializers.CharField(required=True)
+    
 
     class Meta:
         model = supervisor
-        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phone_no', 'department']
+        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department']
 
     def create(self, validated_data):
         sp = User.objects.create(
@@ -22,6 +23,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         name=validated_data['user']['name'],
         password=validated_data['password'],
         department = validated_data['user']['department'],
+        phoneno = validated_data['user']['phoneno'],
         is_active = False,
         # updated_at = timezone.now
         )
@@ -33,7 +35,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         user=sp, 
         faculty_no=validated_data['faculty_no'],
         field_of_interest=validated_data['field_of_interest'],
-        phone_no=validated_data['phone_no'],
+        # phone_no=validated_data['phone_no'],
         # project =project_instance,        
         # department=department_instance,
         )
@@ -41,13 +43,13 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
 
 
 class updateSupervisorSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source='user.email', read_only=True)
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    name = serializers.CharField(source='user.name', read_only=True)
+    # email = serializers.EmailField(source='user.email', read_only=True)
+    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    # name = serializers.CharField(source='user.name', write_only=True,)
     faculty_no = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
-    phone_no = serializers.CharField(required=True)
+    # phone_no = serializers.CharField(required=True)
 
     class Meta:
         model = supervisor
-        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phone_no']
+        fields = ['id','faculty_no', 'field_of_interest']
