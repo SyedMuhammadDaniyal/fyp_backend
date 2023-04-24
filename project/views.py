@@ -174,3 +174,21 @@ class addteammemberAPI(APIView):
                         }
                     )
     
+class allprojectAPI(APIView):
+    def get(self, request):
+        try:
+            my_objects = project.objects.filter(deleted_at=None)
+            serializer = projectlistSerializer(my_objects, many=True)
+            return Response({
+                        "status": 200,
+                        "message": "Success",
+                        "body": serializer.data,
+                        "exception": None
+                    })
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e)
+            })

@@ -1,72 +1,11 @@
 from rest_framework import generics
 from rest_framework.views import APIView 
 from notifications.serializers import notificationSerializer
-from core.models import notification, project
-from rest_framework import viewsets
+from core.models import notification, project, supervisor
 from rest_framework.response import Response
-from rest_framework import status
-
+# from rest_framework import status
+from django.utils import timezone
 # # Create your views here.
-# class notificationsAPIView(APIView):
-#   methods = ('POST', 'GET', 'PUT', 'PATCH', 'DELETE')
-#   def post(self, request):
-#     serialize = notificationSerializer(data=request.data)
-    
-#     if serialize.is_valid():
-#       serialize.save()
-#       return Response(
-#         {
-#           "data": serialize.data,
-#           "message": "success",
-#           "status": 200
-#         }
-#       )
-    
-#     return Response(
-#       {
-#         "data": serialize.errors,
-#         "message": None,
-#         "status": 422
-#       }
-#     )
-
-#   def get(self, request):
-#       my_objects = notification.objects.all()
-#       serializer = notificationSerializer(my_objects, many=True)
-#       return Response(serializer.data, status=status.HTTP_200_OK)
-  
-#   def delete(self, request, pk):
-#         try:
-#             my_object = notification.objects.get(pk=pk)
-#         except notification.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
-#         my_object.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-#   def put(self, request, pk):
-#         try:
-#             my_object = notification.objects.get(pk=pk)
-#         except notification.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
-
-#         serializer = notificationSerializer(my_object, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#   def patch(self, request, pk):
-#       try:
-#           my_object = notification.objects.get(pk=pk)
-#       except notification.DoesNotExist:
-#           return Response(status=status.HTTP_404_NOT_FOUND)
-
-#       serializer = notificationSerializer(my_object, data=request.data, partial=True)
-#       if serializer.is_valid():
-#           serializer.save()
-#           return Response(serializer.data, status=status.HTTP_200_OK)
-#       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class createnotificationAPI(APIView):
   def post(self, request):
@@ -76,10 +15,8 @@ class createnotificationAPI(APIView):
             if serialize.is_valid():
                 notification_obj = serialize.save()
                 projects = project.objects.get(id=request.data.get('id')) #get by id (filter)
-                # for p in projects:
                 print(projects)
                 projects.notification.add(notification_obj)
-                # projects.save()
                 return Response(
                 {
                 "status": 200,
@@ -120,39 +57,117 @@ class createnotificationAPI(APIView):
                 }
             )
 
-
-class createnotificationforspecificAPI(APIView):
-  def post(self, request):
-    try:
-        serialize = notificationSerializer(data=request.data)
-        if serialize.is_valid():
-            notification_obj = serialize.save()
-            projects = project.objects.filer(id=request.data.get('id')) #get by id (filter)
-            # for p in projects:
-            projects.milestone.add(milestone_obj)
-            return Response(
-            {
-            "status": 200,
-            "message": "Success",
-            "body": {},
-            "exception": None
-            }
-        )
-        else:
-            return Response(
-            {
-                "status": 422,
-                "message": serialize.errors,
-                "body": {},
-                "exception": "some exception"
-            }
-        )
-    except Exception as e:
-          return Response(       
-                {
+class allnotificationsAPI(APIView):
+    #for pmo
+    def get(self, request):
+        try:
+            my_objects = notification.objects.filter(deleted_at=None)
+            serializer = notificationSerializer(my_objects, many=True)
+            return Response({
+                        "status": 200,
+                        "message": "Success",
+                        "body": serializer.data,
+                        "exception": None
+                    })
+        except Exception as e:
+            return Response({
                 "status": 404,
                 "message": "some exception",
                 "body": {},
-                "exception": str(e) 
-                }
-            )
+                "exception": str(e)
+            })
+
+
+class getallnotificationsAPI(APIView):
+    def get(self, request):
+        try:
+            if request.data.get("role") == "supervisor": #hardcode
+                sup = supervisor.objects.get(id=request.data.get("supervisorid"), deleted_at=None)
+                projects = project.objects.filter(supervisor=sup)
+                if projects != None:
+                    notifications = notification.objects.filter(project=projects[0], deleted_at=None)
+                    serializer = notificationSerializer(notifications, many=True)
+                    return Response({
+                        "status": 200,
+                        "message": "Success",
+                        "body": serializer.data,
+                        "exception": None
+                    })
+            elif request.data.get("role") == "student": #hardcode
+                p = project.objects.get(id=request.data.get("projectid"), deleted_at=None)
+                if p != None:
+                    notifications = notification.objects.filter(project=p, deleted_at=None)
+                    serializer = notificationSerializer(notifications, many=True)
+                    return Response({
+                        "status": 200,
+                        "message": "Success",
+                        "body": serializer.data,
+                        "exception": None
+                    })
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e)
+            })
+
+class deletenotificationAPI(APIView):    
+    def delete(self, request, pk):
+        try:
+            my_object = notification.objects.get(pk=pk, deleted_at=None)
+            my_object.deleted_at = timezone.now()
+            my_object.save()
+        except notification.DoesNotExist:
+            return Response(
+                        {
+                        "status": 404,
+                        "message": "Not Found",
+                        "body": {},
+                        "exception": None 
+                        }
+                    )
+        return Response(
+                        {
+                        "status": 200,
+                        "message": "Successfuly deleted",
+                        "body": {},
+                        "exception": None 
+                        }
+                    )
+
+class updatenotificationAPI(APIView):
+    def patch(self, request):
+        try:
+            sup = notification.objects.get(id=request.data.get("id"), deleted_at=None)
+            serialize = notificationSerializer(sup,data=request.data)
+            if serialize.is_valid():
+                serialize.save()
+                return Response(       
+                        {
+                        "data": serialize.data,
+                        "status": 200,
+                        "message": "Success",
+                        "body": {},
+                        "exception": None 
+                        }
+                        )
+            else:
+                return Response(
+                        {
+                        "status": 422,
+                        "message": serialize.errors,
+                        "body": {},
+                        "exception": "some exception" 
+                        }
+                    )
+                
+        except Exception as e:
+            return Response(       
+                    {
+                    "status": 404,
+                    "message": serialize.errors,
+                    "body": {},
+                    "exception": str(e) 
+                    }
+                )
