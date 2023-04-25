@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'teamMember',
     "user_management",
+    "boards"
 ]
 
 
