@@ -56,14 +56,18 @@ class User(AbstractUser, BaseModel):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=30)
-    phoneno = models.CharField(max_length=50, default=False)
-    department = models.ForeignKey(department, on_delete=models.RESTRICT)
+    phoneno = models.CharField(max_length=50, unique=True)
+    department = models.ForeignKey(department, on_delete=models.RESTRICT, related_name='department')
+    # deleted_at = models.DateTimeField(null=True)
 
 
     objects = CustomUserManager()
     # username field
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    # class Meta:
+    #     unique_together = ('email', 'deleted_at')
 
 class fyppanel(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
@@ -72,7 +76,7 @@ class fyppanel(BaseModel):
     
 
 class supervisor(BaseModel):
-    user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
+    user = models.OneToOneField("core.User", on_delete=models.RESTRICT, related_name='user')
     faculty_no = models.CharField(max_length=45, unique=True)
     field_of_interest = models.CharField(max_length=45)
     designation = models.CharField(max_length=45, default=False)
@@ -117,13 +121,28 @@ class project(BaseModel):
 
 class teamMember(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
-    rollno = models.CharField(max_length=50)
+    rollno = models.CharField(max_length=50, unique=True)
     grade = models.IntegerField(default=0,
             validators=[
             MaxValueValidator(200),
             MinValueValidator(0)
         ]
     )
-    seatno = models.CharField(max_length=50, unique=True, default=False)
-    enrollmentno = models.CharField(max_length=50, unique=True, default=False)
+    seatno = models.CharField(max_length=50, unique=True)
+    enrollmentno = models.CharField(max_length=50, unique=True)
     project = models.ForeignKey(project, null=True, on_delete=models.RESTRICT)
+
+# class Sprint(BaseModel):
+#     project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
+#     milestone = models.ForeignKey("core.milestone", on_delete=models.RESTRICT)
+#     title = models.CharField(max_length=125)
+#     start_date = models.DateField()
+#     end_date = models.DateField()
+
+# class Ticket(BaseModel):
+#     sprint = models.ForeignKey("boards.Sprint", on_delete=models.RESTRICT)
+#     title = models.CharField(max_length=125)
+#     description = models.TextField()
+#     start_date = models.DateField()
+#     end_date = models.DateField()
+#     assignee = models.ForeignKey("core.User", on_delete=models.RESTRICT)

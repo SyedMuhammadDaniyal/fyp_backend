@@ -60,6 +60,7 @@ class departmentAPI(APIView):
                 serialize.save()
                 return Response(
                 {
+                "data":serialize.data,
                 "status": 200,
                 "message": "Success",
                 "body": {},

@@ -3,7 +3,6 @@ from rest_framework.views import APIView
 from notifications.serializers import notificationSerializer
 from core.models import notification, project, supervisor
 from rest_framework.response import Response
-# from rest_framework import status
 from django.utils import timezone
 # # Create your views here.
 

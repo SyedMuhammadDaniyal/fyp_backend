@@ -5,9 +5,12 @@ from teamMember.serializers import teamMemberSerializer, updateStudentSerializer
 from core.models import User, teamMember, supervisor
 from django.utils import timezone
 from rest_framework import status
+from django.db import transaction
+
 
 # Create your views here.
 class CreateUserView(APIView):
+    @transaction.atomic
     def post(self, request):
         try:
             if request.data.get("role") == User.SUPERVISOR:
@@ -117,8 +120,8 @@ class allusersAPI(APIView):
 class updatesupervisorAPI(APIView):
     def patch(self, request):
       try:
-        sup = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
-        serialize = updateSupervisorSerializer(sup,data=request.data)
+        instance = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
+        serialize = updateSupervisorSerializer(instance,data=request.data)
         if serialize.is_valid():
             serialize.save()
             return Response(       
@@ -148,7 +151,7 @@ class updatesupervisorAPI(APIView):
                 "body": {},
                 "exception": str(e) 
                 }
-                )
+            )
 
 
 class deletesupervisorAPI(APIView):

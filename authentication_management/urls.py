@@ -7,6 +7,7 @@ from department.views import departmentAPI
 from notifications.views import createnotificationAPI, allnotificationsAPI, getallnotificationsAPI, deletenotificationAPI, updatenotificationAPI
 from teamMember.views import RegisterteamMemberAPIView
 from user_management.views import CreateUserView, allusersAPI, updatesupervisorAPI, studentlistAPI, deletesupervisorAPI, updatestudentAPI, deletestudentAPI
+from sprint.views import createsprintAPI
 # from rest_framework_simplejwt.views import (
 #     TokenObtainPairView,
 #     TokenRefreshView,
@@ -38,5 +39,6 @@ urlpatterns = [
   path('allnotifications', allnotificationsAPI.as_view()),
   path('getallnotifications', getallnotificationsAPI.as_view()),
   path('deletenotification/<int:pk>', deletenotificationAPI.as_view()),
-  path('updatenotification', updatenotificationAPI.as_view())
+  path('updatenotification', updatenotificationAPI.as_view()),
+  path('createsprint', createsprintAPI.as_view()),
 ]

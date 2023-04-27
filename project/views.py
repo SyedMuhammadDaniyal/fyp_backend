@@ -146,6 +146,7 @@ class deleteprojectAPI(APIView):
                     )
 
 class addteammemberAPI(APIView):
+    
     def post(self, request):
         pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
         tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)

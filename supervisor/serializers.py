@@ -10,13 +10,15 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
     phoneno = serializers.CharField(source='user.phoneno', required=True)
     department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
     faculty_no = serializers.CharField(required=True)
+    designation = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
     
 
     class Meta:
         model = supervisor
-        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department']
-
+        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department', 'designation']
+    
+    
     def create(self, validated_data):
         sp = User.objects.create(
         email=validated_data['user']['email'],
@@ -35,6 +37,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         user=sp, 
         faculty_no=validated_data['faculty_no'],
         field_of_interest=validated_data['field_of_interest'],
+        designation=validated_data['designation'],
         # phone_no=validated_data['phone_no'],
         # project =project_instance,        
         # department=department_instance,
@@ -43,13 +46,31 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
 
 
 class updateSupervisorSerializer(serializers.ModelSerializer):
-    # email = serializers.EmailField(source='user.email', read_only=True)
-    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    # name = serializers.CharField(source='user.name', write_only=True,)
     faculty_no = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
-    # phone_no = serializers.CharField(required=True)
+    designation = serializers.CharField(required=True)
+    # department = serializers.IntegerField()#PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
+    department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all())
 
     class Meta:
         model = supervisor
-        fields = ['id','faculty_no', 'field_of_interest']
+        fields = ['id','faculty_no', 'field_of_interest', 'designation', 'department']
+    
+    def update(self, instance, validated_data):
+        # Update supervisor fields
+        # Update related user department field
+        
+        user = instance.user
+        x = validated_data.get('department')
+        print(x)
+        # depart = department.objects.get(id=x)
+        # print(depart)
+        user.department = x
+        instance.faculty_no = validated_data.get('faculty_no', instance.faculty_no)
+        instance.field_of_interest = validated_data.get('field_of_interest', instance.field_of_interest)
+        instance.designation = validated_data.get('designation', instance.designation)
+        user.save()
+
+        # Save and return updated supervisor instance
+        instance.save()
+        return instance
