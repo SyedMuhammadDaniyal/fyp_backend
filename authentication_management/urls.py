@@ -1,13 +1,13 @@
 from django.urls import path
 from .views import RegisterUserAPIView, LoginUserApi, getfyppanel
-from project.views import projectAPIView, projectlistAPI, updateprojectAPI, deleteprojectAPI, addteammemberAPI, allprojectAPI
+from project.views import projectAPIView, projectlistAPI, updateprojectAPI, deleteprojectAPI, addteammemberAPI, allprojectAPI, changesupervisorAPI
 from milestone.views import createmilestoneAPI, allmilestoneAPI, updatemilestoneAPI, deletemilestoneAPI, GetAllMilestones
 from supervisor.views import supervisorView
 from department.views import departmentAPI
 from notifications.views import createnotificationAPI, allnotificationsAPI, getallnotificationsAPI, deletenotificationAPI, updatenotificationAPI
 from teamMember.views import RegisterteamMemberAPIView
 from user_management.views import CreateUserView, allusersAPI, updatesupervisorAPI, studentlistAPI, deletesupervisorAPI, updatestudentAPI, deletestudentAPI
-from sprint.views import createsprintAPI
+from sprint.views import createsprintAPI, updatesprintAPI, deletesprintAPI, getspecificsprintAPI
 # from rest_framework_simplejwt.views import (
 #     TokenObtainPairView,
 #     TokenRefreshView,
@@ -28,6 +28,7 @@ urlpatterns = [
   path('updateproject',updateprojectAPI.as_view()),
   path('projectlist',projectlistAPI.as_view()),
   path('projects',allprojectAPI.as_view()), 
+  path('changesupervisor', changesupervisorAPI.as_view()),
   path('deleteproject/<int:pk>',deleteprojectAPI.as_view()),
   path('addteammember',addteammemberAPI.as_view()),
   path('createmilestone',createmilestoneAPI.as_view()),
@@ -41,4 +42,7 @@ urlpatterns = [
   path('deletenotification/<int:pk>', deletenotificationAPI.as_view()),
   path('updatenotification', updatenotificationAPI.as_view()),
   path('createsprint', createsprintAPI.as_view()),
+  path('updatesprint',updatesprintAPI.as_view()),
+  path('deletesprint/<int:pk>', deletesprintAPI.as_view()),
+  path('getspecificsprint', getspecificsprintAPI.as_view()),
 ]

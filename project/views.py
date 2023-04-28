@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from project.serializers import projectSerializer, projectlistSerializer
 from rest_framework import viewsets
 from rest_framework.response import Response
-from core.models import project, teamMember
+from core.models import project, teamMember, supervisor
 from rest_framework.decorators import api_view 
 from django.utils import timezone
 from teamMember.serializers import teamMemberSerializer
@@ -49,7 +49,8 @@ class projectlistAPI(APIView):
     def get(self, request):
         try:
             if request.data.get("role") == "supervisor": #hardcode
-                sup = project.objects.filter(supervisor=request.data.get("id"), deleted_at=None)
+                sup = project.objects.filter(supervisor=request.data.get('id'), deleted_at=None)
+                print(sup)
                 serialize = projectlistSerializer(sup, many=True)   
                 return Response(       
                             {
@@ -193,3 +194,30 @@ class allprojectAPI(APIView):
                 "body": {},
                 "exception": str(e)
             })
+
+class changesupervisorAPI(APIView):
+    def patch(self, request):
+        try:
+            pro = project.objects.get(id=request.data.get("pro_id"), deleted_at=None)
+            sup = supervisor.objects.get(id=request.data.get("sup_id"), deleted_at=None)
+            pro.supervisor = sup
+            pro.save()
+            return Response(       
+                    {
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
+               
+        except Exception as e:
+            return Response(       
+                    {
+                    "status": 404,
+                    "body": {},
+                    "exception": str(e) 
+                    }
+                )
+
+

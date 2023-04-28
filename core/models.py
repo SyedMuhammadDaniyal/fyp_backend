@@ -88,7 +88,7 @@ class milestone(BaseModel):
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
     rubrics = models.JSONField(null=True, blank=True)
-    fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
+    # fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
 
 class notification(BaseModel):
     title = models.CharField(max_length=75)
@@ -113,7 +113,7 @@ class project(BaseModel):
     status = models.CharField(max_length=45,default="ongoing")
     domain = models.CharField(max_length=45)
     grade = models.IntegerField(default=0)
-    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT)
+    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True)
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
     notification = models.ManyToManyField(notification)

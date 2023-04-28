@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from supervisor.serializers import AddSupervisorSerializer, updateSupervisorSerializer
 from teamMember.serializers import teamMemberSerializer, updateStudentSerializer
-from core.models import User, teamMember, supervisor
+from core.models import User, teamMember, supervisor, project
 from django.utils import timezone
 from rest_framework import status
 from django.db import transaction
@@ -159,6 +159,11 @@ class deletesupervisorAPI(APIView):
         try:
             my_object = supervisor.objects.get(pk=pk, deleted_at=None)
             my_object.deleted_at = timezone.now()
+            pro = project.objects.filter(supervisor=pk, deleted_at=None, status='Ongoing')
+            for p in pro:
+                print(p)
+                p.supervisor = None
+                p.save()
             my_object.save()
         except supervisor.DoesNotExist:
             return Response(

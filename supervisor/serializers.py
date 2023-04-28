@@ -49,26 +49,23 @@ class updateSupervisorSerializer(serializers.ModelSerializer):
     faculty_no = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
     designation = serializers.CharField(required=True)
-    # department = serializers.IntegerField()#PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
-    department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all())
+    department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
 
     class Meta:
         model = supervisor
-        fields = ['id','faculty_no', 'field_of_interest', 'designation', 'department']
-    
+        fields = ['id', 'faculty_no', 'field_of_interest', 'designation', 'department']
+
     def update(self, instance, validated_data):
         # Update supervisor fields
-        # Update related user department field
-        
-        user = instance.user
-        x = validated_data.get('department')
-        print(x)
-        # depart = department.objects.get(id=x)
-        # print(depart)
-        user.department = x
         instance.faculty_no = validated_data.get('faculty_no', instance.faculty_no)
         instance.field_of_interest = validated_data.get('field_of_interest', instance.field_of_interest)
         instance.designation = validated_data.get('designation', instance.designation)
+
+        
+        # Update related user department field
+        user = instance.user
+        dep = validated_data['user']['department']
+        user.department = dep
         user.save()
 
         # Save and return updated supervisor instance
