@@ -84,7 +84,7 @@ class supervisor(BaseModel):
 
 class milestone(BaseModel):
     milestone_name = models.CharField(max_length=75,unique=True)
-    document_submissin_date = models.DateField()
+    document_submission_date = models.DateField()
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
     rubrics = models.JSONField(null=True, blank=True)

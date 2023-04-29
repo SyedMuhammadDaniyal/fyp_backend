@@ -50,7 +50,7 @@ class projectlistAPI(APIView):
         try:
             if request.data.get("role") == "supervisor": #hardcode
                 sup = project.objects.filter(supervisor=request.data.get('id'), deleted_at=None)
-                print(sup)
+                # print(sup)
                 serialize = projectlistSerializer(sup, many=True)   
                 return Response(       
                             {
@@ -179,7 +179,8 @@ class addteammemberAPI(APIView):
 class allprojectAPI(APIView):
     def get(self, request):
         try:
-            my_objects = project.objects.filter(deleted_at=None)
+            # pmo = fyp
+            my_objects = project.objects.filter(department=request.data.get("dep_id"), deleted_at=None)
             serializer = projectlistSerializer(my_objects, many=True)
             return Response({
                         "status": 200,
