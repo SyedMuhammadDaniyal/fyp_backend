@@ -3,15 +3,20 @@ from django.shortcuts import get_object_or_404
 from project.serializers import projectSerializer, projectlistSerializer
 from rest_framework import viewsets
 from rest_framework.response import Response
-from core.models import project, teamMember
+from core.models import project, teamMember, supervisor
 from rest_framework.decorators import api_view 
 from django.utils import timezone
-from teamMember.serializers import teamMemberSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from core.models import project, teamMember
+from project.serializers import projectlistSerializer, projectSerializer
+
 # from rest_framework.permissions import IsAuthenticated
 
 # # Create your views here.
 class projectAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
     def post(self, request):
         try:
             serialize = projectSerializer(data=request.data)
@@ -48,8 +53,9 @@ class projectAPIView(APIView):
 class projectlistAPI(APIView):
     def get(self, request):
         try:
-            if request.data.get("role") == "supervisor": #hardcode
-                sup = project.objects.filter(supervisor=request.data.get("id"), deleted_at=None)
+            if request.GET.get("role") == "supervisor": #hardcode
+                sup = project.objects.filter(supervisor=request.data.get('id'), deleted_at=None)
+                print(sup)
                 serialize = projectlistSerializer(sup, many=True)   
                 return Response(       
                             {
@@ -60,7 +66,7 @@ class projectlistAPI(APIView):
                             "exception": None 
                             }
                         )
-            elif request.data.get("role") == "student": #hardcode
+            elif request.GET.get("role") == "student": #hardcode
                 tm = teamMember.objects.get(id=request.data.get("id"), deleted_at=None)
                 pro = tm.project
                 serialize = projectlistSerializer(pro)   
@@ -146,6 +152,7 @@ class deleteprojectAPI(APIView):
                     )
 
 class addteammemberAPI(APIView):
+    
     def post(self, request):
         pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
         tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
@@ -174,3 +181,48 @@ class addteammemberAPI(APIView):
                         }
                     )
     
+class allprojectAPI(APIView):
+    def get(self, request):
+        try:
+            my_objects = project.objects.filter(deleted_at=None)
+            serializer = projectlistSerializer(my_objects, many=True)
+            return Response({
+                        "status": 200,
+                        "message": "Success",
+                        "body": serializer.data,
+                        "exception": None
+                    })
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e)
+            })
+
+class changesupervisorAPI(APIView):
+    def patch(self, request):
+        try:
+            pro = project.objects.get(id=request.data.get("pro_id"), deleted_at=None)
+            sup = supervisor.objects.get(id=request.data.get("sup_id"), deleted_at=None)
+            pro.supervisor = sup
+            pro.save()
+            return Response(       
+                    {
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
+               
+        except Exception as e:
+            return Response(       
+                    {
+                    "status": 404,
+                    "body": {},
+                    "exception": str(e) 
+                    }
+                )
+
+

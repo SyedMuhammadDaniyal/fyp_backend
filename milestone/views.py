@@ -123,10 +123,10 @@ class GetAllMilestones(APIView):
     def get(self, request):
         try:
             if request.data.get("role") == "supervisor": #hardcode
-                sup = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
+                sup = supervisor.objects.get(id=request.data.get("supervisorid"), deleted_at=None)
                 projects = project.objects.filter(supervisor=sup)
                 if projects != None:
-                    milestones = milestone.objects.filter(project=projects[0])
+                    milestones = milestone.objects.filter(project=projects[0], deleted_at=None)
                     serializer = milestoneSerializer(milestones, many=True)
                     return Response({
                         "status": 200,
@@ -135,11 +135,9 @@ class GetAllMilestones(APIView):
                         "exception": None
                     })
             elif request.data.get("role") == "student": #hardcode
-                p = project.objects.get(id=request.data.get("id"), deleted_at=None)
-                # projects = project.objects.filter(=tm)
-                # print(projects)
-                if projects != None:
-                    milestones = milestone.objects.filter(project=projects[0])
+                p = project.objects.get(id=request.data.get("projectid"), deleted_at=None)
+                if p != None:
+                    milestones = milestone.objects.filter(project=p, deleted_at=None)
                     serializer = milestoneSerializer(milestones, many=True)
                     return Response({
                         "status": 200,

@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-=r^8jwame2(n*_f0p@wva-qvh+23@lo^uaoi(gy05b-3vk+lly
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pmbotics.herokuapp.com']
+ALLOWED_HOSTS = ['pmbotics.herokuapp.com', '127.0.0.1']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -39,17 +39,18 @@ INSTALLED_APPS = [
     'corsheaders',
     'teamMember',
     "user_management",
-    "boards"
+    "boards",
+    "sprint",
 ]
 
 
 AUTH_USER_MODEL ='core.User'
 
-# REST_FRAMEWORK = {
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     # 'utils.renderer.CustomRenderer',
-    # ]
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

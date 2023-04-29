@@ -2,12 +2,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from supervisor.serializers import AddSupervisorSerializer, updateSupervisorSerializer
 from teamMember.serializers import teamMemberSerializer, updateStudentSerializer
-from core.models import User, teamMember, supervisor
+from core.models import User, teamMember, supervisor, project
 from django.utils import timezone
 from rest_framework import status
+from django.db import transaction
+
 
 # Create your views here.
 class CreateUserView(APIView):
+    @transaction.atomic
     def post(self, request):
         try:
             if request.data.get("role") == User.SUPERVISOR:
@@ -117,8 +120,8 @@ class allusersAPI(APIView):
 class updatesupervisorAPI(APIView):
     def patch(self, request):
       try:
-        sup = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
-        serialize = updateSupervisorSerializer(sup,data=request.data)
+        instance = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
+        serialize = updateSupervisorSerializer(instance,data=request.data)
         if serialize.is_valid():
             serialize.save()
             return Response(       
@@ -148,7 +151,7 @@ class updatesupervisorAPI(APIView):
                 "body": {},
                 "exception": str(e) 
                 }
-                )
+            )
 
 
 class deletesupervisorAPI(APIView):
@@ -156,6 +159,11 @@ class deletesupervisorAPI(APIView):
         try:
             my_object = supervisor.objects.get(pk=pk, deleted_at=None)
             my_object.deleted_at = timezone.now()
+            pro = project.objects.filter(supervisor=pk, deleted_at=None, status='Ongoing')
+            for p in pro:
+                print(p)
+                p.supervisor = None
+                p.save()
             my_object.save()
         except supervisor.DoesNotExist:
             return Response(
