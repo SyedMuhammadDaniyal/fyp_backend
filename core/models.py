@@ -51,14 +51,19 @@ class User(AbstractUser, BaseModel):
     SUPERVISOR = "supervisor"
     STUDENT = "student"
     PMO = "fyp_panel"
-    
+    USER_ROLES = (
+        (SUPERVISOR, SUPERVISOR),
+        (STUDENT, STUDENT),
+        (PMO, PMO)
+    )
+
     username = None
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=30)
-    phoneno = models.CharField(max_length=50, unique=True)
+    phoneno = models.CharField(max_length=50)
     department = models.ForeignKey(department, on_delete=models.RESTRICT, related_name='department')
-    # deleted_at = models.DateTimeField(null=True)
+    role = models.CharField(choices=USER_ROLES, max_length=20, null=True)
 
 
     objects = CustomUserManager()
@@ -113,7 +118,7 @@ class project(BaseModel):
     status = models.CharField(max_length=45,default="ongoing")
     domain = models.CharField(max_length=45)
     grade = models.IntegerField(default=0)
-    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True)
+    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True, related_name="projects")
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
     notification = models.ManyToManyField(notification)

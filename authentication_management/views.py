@@ -47,14 +47,6 @@ class RegisterUserAPIView(APIView):
             "exception": str(e)
             }
           )
-        
-    def delete(self, request, pk):
-      try:
-          instance = YourModel.objects.get(pk=pk)
-      except YourModel.DoesNotExist:
-          return Response(status=status.HTTP_404_NOT_FOUND)
-      instance.delete()
-      return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class LoginUserApi(APIView):

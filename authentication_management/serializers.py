@@ -24,6 +24,7 @@ class RegisterSerializer(serializers.Serializer):
       password=validated_data['password'],
       phoneno=validated_data['user']['phoneno'],
       department=validated_data['user']['department'],
+      role=User.PMO
     )
     FYPPANEL = fyppanel.objects.create(
       user=user, 

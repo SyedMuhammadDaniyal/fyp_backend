@@ -15,10 +15,5 @@ class Migration(migrations.Migration):
             model_name='user',
             name='department',
             field=models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, related_name='department', to='core.department'),
-        ),
-        migrations.AlterField(
-            model_name='user',
-            name='phoneno',
-            field=models.CharField(max_length=50, unique=True),
-        ),
+        )
     ]

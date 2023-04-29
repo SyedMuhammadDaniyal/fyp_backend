@@ -6,12 +6,17 @@ from rest_framework.response import Response
 from core.models import project, teamMember, supervisor
 from rest_framework.decorators import api_view 
 from django.utils import timezone
-from teamMember.serializers import teamMemberSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from core.models import project, teamMember
+from project.serializers import projectlistSerializer, projectSerializer
+
 # from rest_framework.permissions import IsAuthenticated
 
 # # Create your views here.
 class projectAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
     def post(self, request):
         try:
             serialize = projectSerializer(data=request.data)
@@ -48,7 +53,7 @@ class projectAPIView(APIView):
 class projectlistAPI(APIView):
     def get(self, request):
         try:
-            if request.data.get("role") == "supervisor": #hardcode
+            if request.GET.get("role") == "supervisor": #hardcode
                 sup = project.objects.filter(supervisor=request.data.get('id'), deleted_at=None)
                 # print(sup)
                 serialize = projectlistSerializer(sup, many=True)   
@@ -61,7 +66,7 @@ class projectlistAPI(APIView):
                             "exception": None 
                             }
                         )
-            elif request.data.get("role") == "student": #hardcode
+            elif request.GET.get("role") == "student": #hardcode
                 tm = teamMember.objects.get(id=request.data.get("id"), deleted_at=None)
                 pro = tm.project
                 serialize = projectlistSerializer(pro)   

@@ -27,7 +27,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         department = validated_data['user']['department'],
         phoneno = validated_data['user']['phoneno'],
         is_active = False,
-        # updated_at = timezone.now
+        role=User.SUPERVISOR
         )
         # department_id = validated_data.pop('department')
         # department_instance = department.objects.get(id=department_id)
