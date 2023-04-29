@@ -1,22 +1,16 @@
-from rest_framework.views import APIView 
-from django.shortcuts import get_object_or_404
-from project.serializers import projectSerializer, projectlistSerializer
-from rest_framework import viewsets
-from rest_framework.response import Response
-from core.models import project, teamMember, supervisor, User
-from rest_framework.decorators import api_view 
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.models import project, teamMember
+from core.models import User, fyppanel, project, supervisor, teamMember
 from project.serializers import projectlistSerializer, projectSerializer
 
 # from rest_framework.permissions import IsAuthenticated
 
 # # Create your views here.
 class projectAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         try:
             serialize = projectSerializer(data=request.data)
@@ -129,7 +123,7 @@ class updateprojectAPI(APIView):
                 )
 
 class deleteprojectAPI(APIView):
-
+    permission_classes = [IsAuthenticated]
     def delete(self, request, pk):
         try:
             my_object = project.objects.get(pk=pk, deleted_at=None)
@@ -154,7 +148,7 @@ class deleteprojectAPI(APIView):
                     )
 
 class addteammemberAPI(APIView):
-    
+    permission_classes = [IsAuthenticated]    
     def post(self, request):
         pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
         tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
@@ -195,10 +189,11 @@ class addteammemberAPI(APIView):
                     
     
 class allprojectAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
-            # pmo = fyp
-            my_objects = project.objects.filter(department=request.data.get("dep_id"), deleted_at=None)
+            pmo = fyppanel.objects.get(user=request.user, deleted_at=None)
+            my_objects = project.objects.filter(department=pmo.user.department, deleted_at=None)
             serializer = projectlistSerializer(my_objects, many=True)
             return Response({
                         "status": 200,
@@ -215,6 +210,7 @@ class allprojectAPI(APIView):
             })
 
 class changesupervisorAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def patch(self, request):
         try:
             pro = project.objects.get(id=request.data.get("pro_id"), deleted_at=None)
@@ -238,5 +234,4 @@ class changesupervisorAPI(APIView):
                     "exception": str(e) 
                     }
                 )
-
 
