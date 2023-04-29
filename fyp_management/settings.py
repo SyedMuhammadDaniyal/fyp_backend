@@ -39,17 +39,18 @@ INSTALLED_APPS = [
     'corsheaders',
     'teamMember',
     "user_management",
-    "boards"
+    "boards",
+    "sprint",
 ]
 
 
 AUTH_USER_MODEL ='core.User'
 
-# REST_FRAMEWORK = {
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     # 'utils.renderer.CustomRenderer',
-    # ]
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
