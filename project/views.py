@@ -92,6 +92,7 @@ class projectlistAPI(APIView):
         
 
 class updateprojectAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def patch(self, request):
         try:
             sup = project.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -121,15 +122,15 @@ class updateprojectAPI(APIView):
             return Response(       
                     {
                     "status": 404,
-                    "message": serialize.errors,
+                    "message": "some exception",
                     "body": {},
                     "exception": str(e) 
                     }
                 )
 
 class deleteprojectAPI(APIView):
-    
-      def delete(self, request, pk):
+
+    def delete(self, request, pk):
         try:
             my_object = project.objects.get(pk=pk, deleted_at=None)
             my_object.deleted_at = timezone.now()
