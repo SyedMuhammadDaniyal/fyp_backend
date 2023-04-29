@@ -118,7 +118,7 @@ class project(BaseModel):
     status = models.CharField(max_length=45,default="ongoing")
     domain = models.CharField(max_length=45)
     grade = models.IntegerField(default=0)
-    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True)
+    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True, related_name="projects")
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
     notification = models.ManyToManyField(notification)

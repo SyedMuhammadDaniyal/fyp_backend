@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from .serializers import sprintSerializer
 from .models import Sprint
 from django.utils import timezone
-from core.models import project
+from core.models import project, User, supervisor
 # Create your views here.
 
 class createsprintAPI(APIView):
@@ -40,12 +41,14 @@ class createsprintAPI(APIView):
             )
 
 class getspecificsprintAPI(APIView):
+        permission_classes = [IsAuthenticated]
         def get(self, request):
             try:
-                if request.data.get("role") == "supervisor":
-                    pro = list(project.objects.filter(supervisor=request.data.get("id"), deleted_at=None)).values_list('id', flat=True)
-                    pk = pro.pop()
-                    sp = Sprint.objects.filter(project=pk, deleted_at=None)
+                if request.user.role == User.SUPERVISOR:
+                    sup = supervisor.objects.get(user=request.user)
+                    # pro = list(project.objects.filter(supervisor=request.data.get("id"), deleted_at=None)).values_list('id', flat=True)
+                    # pk = pro.pop()
+                    sp = Sprint.objects.filter(project__in=sup.projects, deleted_at=None)
                     serialize = sprintSerializer(sp, many=True)
                     return Response(       
                     {
