@@ -1,17 +1,16 @@
-from rest_framework.views import APIView 
-from django.shortcuts import get_object_or_404
-from project.serializers import projectSerializer, projectlistSerializer
-from rest_framework import viewsets
-from rest_framework.response import Response
-from core.models import project, teamMember
-from rest_framework.decorators import api_view 
 from django.utils import timezone
-from teamMember.serializers import teamMemberSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from core.models import project, teamMember
+from project.serializers import projectlistSerializer, projectSerializer
+
 # from rest_framework.permissions import IsAuthenticated
 
 # # Create your views here.
 class projectAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         try:
             serialize = projectSerializer(data=request.data)
