@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from project.serializers import projectSerializer, projectlistSerializer
 from rest_framework import viewsets
 from rest_framework.response import Response
-from core.models import project, teamMember, supervisor
+from core.models import project, teamMember, supervisor, User
 from rest_framework.decorators import api_view 
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
@@ -51,12 +51,13 @@ class projectAPIView(APIView):
 
 
 class projectlistAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
-            if request.GET.get("role") == "supervisor": #hardcode
-                sup = project.objects.filter(supervisor=request.data.get('id'), deleted_at=None)
-                # print(sup)
-                serialize = projectlistSerializer(sup, many=True)   
+            if request.user.role == User.SUPERVISOR:
+                sup = supervisor.objects.get(user=request.user, deleted_at=None)
+                pro = project.objects.filter(supervisor=sup, deleted_at=None)
+                serialize = projectlistSerializer(pro, many=True)   
                 return Response(       
                             {
                             "data": serialize.data,
@@ -66,8 +67,8 @@ class projectlistAPI(APIView):
                             "exception": None 
                             }
                         )
-            elif request.GET.get("role") == "student": #hardcode
-                tm = teamMember.objects.get(id=request.data.get("id"), deleted_at=None)
+            elif request.user.role == User.STUDENT:
+                tm = teamMember.objects.get(user=request.user, deleted_at=None)
                 pro = tm.project
                 serialize = projectlistSerializer(pro)   
                 return Response(       
@@ -170,16 +171,27 @@ class addteammemberAPI(APIView):
     def delete(self, request):
         pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
         tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
-        tm.project = None
-        tm.save()
-        return Response(
+        if tm.project == None:
+                return Response(
                         {
-                        "status": 200,
-                        "message": "Success",
+                        "status": 404,
+                        "message": "Not Found",
                         "body": {},
                         "exception": None 
                         }
                     )
+        else:    
+            tm.project = None
+            tm.save()
+            return Response(
+                    {
+                    "status": 200,
+                    "message": "Successfuly deleted",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
+                    
     
 class allprojectAPI(APIView):
     def get(self, request):
