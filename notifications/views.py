@@ -1,5 +1,6 @@
 from rest_framework import generics
-from rest_framework.views import APIView 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from notifications.serializers import notificationSerializer
 from core.models import notification, project, supervisor
 from rest_framework.response import Response
@@ -7,15 +8,29 @@ from django.utils import timezone
 # # Create your views here.
 
 class createnotificationAPI(APIView):
-  def post(self, request):
-    try:
-        serialize = notificationSerializer(data=request.data)
-        if request.data.get('id') != None:                
-            if serialize.is_valid():
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        try:
+            serialize = notificationSerializer(data=request.data)
+            if request.data.get('id') != None:                
+                if serialize.is_valid():
+                    notification_obj = serialize.save()
+                    projects = project.objects.get(id=request.data.get('id')) #get by id (filter)
+                    print(projects)
+                    projects.notification.add(notification_obj)
+                    return Response(
+                    {
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None
+                    }
+                )            
+            elif serialize.is_valid():
                 notification_obj = serialize.save()
-                projects = project.objects.get(id=request.data.get('id')) #get by id (filter)
-                print(projects)
-                projects.notification.add(notification_obj)
+                projects = project.objects.all()
+                for p in projects:
+                    p.notification.add(notification_obj)
                 return Response(
                 {
                 "status": 200,
@@ -23,31 +38,18 @@ class createnotificationAPI(APIView):
                 "body": {},
                 "exception": None
                 }
-            )            
-        elif serialize.is_valid():
-            notification_obj = serialize.save()
-            projects = project.objects.all()
-            for p in projects:
-                p.notification.add(notification_obj)
-            return Response(
-            {
-            "status": 200,
-            "message": "Success",
-            "body": {},
-            "exception": None
-            }
-        )
-        else:
-            return Response(
-            {
+            )
+            else:
+                return Response(
+                {
                 "status": 422,
                 "message": serialize.errors,
                 "body": {},
                 "exception": "some exception"
-            }
-        )
-    except Exception as e:
-          return Response(       
+                }
+            )
+        except Exception as e:
+            return Response(       
                 {
                 "status": 404,
                 "message": "some exception",
@@ -57,7 +59,7 @@ class createnotificationAPI(APIView):
             )
 
 class allnotificationsAPI(APIView):
-    #for pmo
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             my_objects = notification.objects.filter(deleted_at=None)
@@ -78,6 +80,7 @@ class allnotificationsAPI(APIView):
 
 
 class getallnotificationsAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             if request.data.get("role") == "supervisor": #hardcode
@@ -112,6 +115,7 @@ class getallnotificationsAPI(APIView):
             })
 
 class deletenotificationAPI(APIView):    
+    permission_classes = [IsAuthenticated]
     def delete(self, request, pk):
         try:
             my_object = notification.objects.get(pk=pk, deleted_at=None)
@@ -136,6 +140,7 @@ class deletenotificationAPI(APIView):
                     )
 
 class updatenotificationAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def patch(self, request):
         try:
             sup = notification.objects.get(id=request.data.get("id"), deleted_at=None)

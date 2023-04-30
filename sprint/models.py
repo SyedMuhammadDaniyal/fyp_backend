@@ -8,3 +8,11 @@ class Sprint(BaseModel):
     title = models.CharField(max_length=125)
     start_date = models.DateField()
     end_date = models.DateField()
+
+class Ticket(BaseModel):
+    sprint = models.ForeignKey(Sprint, on_delete=models.RESTRICT)
+    title = models.CharField(max_length=125)
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    assignee = models.ForeignKey("core.User", on_delete=models.RESTRICT)
