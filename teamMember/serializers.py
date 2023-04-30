@@ -24,7 +24,8 @@ class teamMemberSerializer(serializers.ModelSerializer):
         password=validated_data['password'],
         phoneno = validated_data['user']['phoneno'],
         department = validated_data['user']['department'],
-        is_active = False
+        is_active = False,
+        role=User.STUDENT
         )
         # department_id = validated_data.pop('department')
         # department_instance = department.objects.get(id=department_id)

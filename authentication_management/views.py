@@ -9,57 +9,44 @@ from authentication_management.utils.contant import LoginMessages
 from core.models import User
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view 
+from django.db import transaction
 
 
 
 class RegisterUserAPIView(APIView):
-  
+
+  @transaction.atomic  
   def post(self, request):
-    serialize = RegisterSerializer(data=request.data)
-    # try:
-    # print(User.objects.get('email')) 
-    if serialize.is_valid():
-      serialize.save()
+    try:
+      serialize = RegisterSerializer(data=request.data) 
+      if serialize.is_valid():
+          serialize.save()
+          return Response(
+              {
+              "status": 200,
+              "message": "Success",
+              "body": {},
+              "exception": None 
+              }
+          )
+      else:
+          return Response(
+              {
+              "status": 422,
+              "message": serialize.errors,
+              "body": {},
+              "exception": "some exception" 
+              }
+          )
+    except Exception as e:
       return Response(
-        {
-          "data": serialize.data,
-          "message": "success",
-          "status": 200
-        }
-      )
-    else:
-      #  serialize.is_valid() == False:
-      return Response(
-        {
-          "data": "",
-          "message": serialize.errors,#"Error is already registered",
-          "status": 422
-        }
-      )
-    # else:        
-    #   return Response(
-    #     {
-    #       "data": "",
-    #       "message": "Error is",# serialize.errors
-    #       "status": 422
-    #     }
-    #   )
-    # except:
-    #   return HttpResponse("Error is")
-
-    # except IntegrityError as e:
-    #   if 'UNIQUE constraint' in str(e.args):
-    #         #your code here
-    #         return Response ({"Email already exist"})
-
-    def delete(self, request, pk):
-      try:
-          instance = YourModel.objects.get(pk=pk)
-      except YourModel.DoesNotExist:
-          return Response(status=status.HTTP_404_NOT_FOUND)
-
-      instance.delete()
-      return Response(status=status.HTTP_204_NO_CONTENT)
+            {
+            "status": 400,
+            "message": "Bad Request",
+            "body": {},
+            "exception": str(e)
+            }
+          )
 
 
 class LoginUserApi(APIView):
@@ -70,12 +57,18 @@ class LoginUserApi(APIView):
     if serialize.is_valid():
       try:
         user = User.objects.get(**serialize.validated_data)
+        id = user.id
+        name = user.name
+        role = user.role
+        data = [id,name,role]
         access_token = RefreshToken.for_user(user).access_token
 
         return Response(
           {
             "data": {
-              "access_token": str(access_token)
+              "access_token": str(access_token),
+              "data1":serialize.data,
+              "data2":data
             },
             "message": "Login Succes",
             "status": 200
