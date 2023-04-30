@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 class milestoneSerializer(serializers.ModelSerializer):
     milestone_name = serializers.CharField(required=True)
-    document_submissin_date = serializers.DateField(required=True)
+    document_submission_date = serializers.DateField(required=True)
     milestone_defending_date = serializers.DateField(required=True)
     milestone_details = serializers.CharField(required=True)
     rubrics = serializers.JSONField(required=False)
@@ -14,4 +14,4 @@ class milestoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = milestone
         # fields = "__all__"
-        fields = ['id','milestone_name', 'document_submissin_date', 'milestone_defending_date', 'milestone_details', 'rubrics']    
+        fields = ['id','milestone_name', 'document_submission_date', 'milestone_defending_date', 'milestone_details', 'rubrics']    

@@ -89,7 +89,7 @@ class supervisor(BaseModel):
 
 class milestone(BaseModel):
     milestone_name = models.CharField(max_length=75,unique=True)
-    document_submissin_date = models.DateField()
+    document_submission_date = models.DateField()
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
     rubrics = models.JSONField(null=True, blank=True)
@@ -118,7 +118,7 @@ class project(BaseModel):
     status = models.CharField(max_length=45,default="ongoing")
     domain = models.CharField(max_length=45)
     grade = models.IntegerField(default=0)
-    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True)
+    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True, related_name="projects")
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
     notification = models.ManyToManyField(notification)
