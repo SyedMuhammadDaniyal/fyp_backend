@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from notifications.serializers import notificationSerializer
-from core.models import notification, project, supervisor
+from core.models import notification, project, supervisor, User, teamMember
 from rest_framework.response import Response
 from django.utils import timezone
 # # Create your views here.
@@ -83,20 +83,25 @@ class getallnotificationsAPI(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
-            if request.data.get("role") == "supervisor": #hardcode
-                sup = supervisor.objects.get(id=request.data.get("supervisorid"), deleted_at=None)
+            if request.user.role == User.SUPERVISOR:
+                sup = supervisor.objects.get(user=request.user, deleted_at=None)
                 projects = project.objects.filter(supervisor=sup)
-                if projects != None:
-                    notifications = notification.objects.filter(project=projects[0], deleted_at=None)
-                    serializer = notificationSerializer(notifications, many=True)
-                    return Response({
+                # print(projects)
+                # if projects != None: #projects[0]
+                notifications = []
+                for p in projects:
+                    n = notification.objects.filter(project=p, deleted_at=None)
+                    notifications += list(n)
+                serializer = notificationSerializer(notifications, many=True)
+                return Response({
                         "status": 200,
                         "message": "Success",
                         "body": serializer.data,
                         "exception": None
                     })
-            elif request.data.get("role") == "student": #hardcode
-                p = project.objects.get(id=request.data.get("projectid"), deleted_at=None)
+            elif request.user.role == User.STUDENT:
+                tm = teamMember.objects.get(user=request.user, deleted_at=None)
+                p = tm.project
                 if p != None:
                     notifications = notification.objects.filter(project=p, deleted_at=None)
                     serializer = notificationSerializer(notifications, many=True)
@@ -105,7 +110,14 @@ class getallnotificationsAPI(APIView):
                         "message": "Success",
                         "body": serializer.data,
                         "exception": None
-                    })
+                        })
+                else:
+                    return Response({
+                        "status": 200,
+                        "message": "Success",
+                        "body": [],
+                        "exception": None
+                        })
         except Exception as e:
             return Response({
                 "status": 404,

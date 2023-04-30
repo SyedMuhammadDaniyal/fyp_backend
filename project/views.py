@@ -148,25 +148,37 @@ class deleteprojectAPI(APIView):
                     )
 
 class addteammemberAPI(APIView):
-    permission_classes = [IsAuthenticated]    
+    permission_classes = [IsAuthenticated]
     def post(self, request):
-        pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
-        tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
-        tm.project = pro
-        tm.save()
-        return Response(
-                        {
-                        "status": 200,
-                        "message": "Success",
-                        "body": {},
-                        "exception": None 
-                        }
-                    )
+        try:
+            pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
+            tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
+            tm.project = pro
+            tm.save()
+            return Response(
+                    {
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
+        except Exception as e:
+            return Response(       
+                {
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e) 
+                }
+            )
+        
 
     def delete(self, request):
-        pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
-        tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
-        if tm.project == None:
+        try:
+            pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
+            tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
+            if tm.project == None:
                 return Response(
                         {
                         "status": 404,
@@ -175,10 +187,10 @@ class addteammemberAPI(APIView):
                         "exception": None 
                         }
                     )
-        else:    
-            tm.project = None
-            tm.save()
-            return Response(
+            else:    
+                tm.project = None
+                tm.save()
+                return Response(
                     {
                     "status": 200,
                     "message": "Successfuly deleted",
@@ -186,7 +198,16 @@ class addteammemberAPI(APIView):
                     "exception": None 
                     }
                 )
-                    
+        except Exception as e:
+            return Response(       
+                    {
+                    "status": 404,
+                    "message": "some exception",
+                    "body": {},
+                    "exception": str(e) 
+                    }
+                )
+            
     
 class allprojectAPI(APIView):
     permission_classes = [IsAuthenticated]
