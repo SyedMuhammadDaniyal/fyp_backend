@@ -12,6 +12,15 @@ class RegisterSerializer(serializers.Serializer):
   phoneno = serializers.CharField(required=True, source='user.phoneno')
   department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
   
+  def validate_name(self, value):
+      if not isinstance(value, str):
+          raise serializers.ValidationError('Name should be a string')
+      return value
+  
+  def validate_phoneno(self, value):
+    if len(value) < 11:
+        raise serializers.ValidationError("Phone number must be at least 11 characters.")
+    return value
   
   class Meta:
     model = User

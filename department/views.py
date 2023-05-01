@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+# from rest_framework.permissions import IsAuthenticated
 from core.models import department
 from .serializers import departmentSerializer
 from rest_framework.views import APIView
@@ -7,7 +7,7 @@ from django.utils import timezone
 # Create your views here.
 
 class departmentAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
@@ -103,6 +103,3 @@ class departmentAPI(APIView):
                         "exception": None 
                         }
                     )
-
-
-    
