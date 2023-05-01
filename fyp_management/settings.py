@@ -1,5 +1,6 @@
 
 from imagekitio import ImageKit
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -148,3 +149,7 @@ imagekit = ImageKit(
     public_key='public_h6pDD6DN/ayI0F2rhaYbPBorrew=',
     url_endpoint='https://ik.imagekit.io/xmsftyf5u'
 )
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}

@@ -54,7 +54,7 @@ class User(AbstractUser, BaseModel):
     USER_ROLES = (
         (SUPERVISOR, SUPERVISOR),
         (STUDENT, STUDENT),
-        (PMO, PMO)
+        (PMO, PMO)  
     )
 
     username = None

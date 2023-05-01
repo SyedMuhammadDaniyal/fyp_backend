@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from supervisor.serializers import AddSupervisorSerializer, updateSupervisorSerializer
 from teamMember.serializers import teamMemberSerializer, updateStudentSerializer
 from core.models import User, teamMember, supervisor, project
@@ -10,6 +11,8 @@ from django.db import transaction
 
 # Create your views here.
 class CreateUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     @transaction.atomic
     def post(self, request):
         try:
@@ -70,7 +73,7 @@ class CreateUserView(APIView):
             
 
 class allusersAPI(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             if request.GET.get("role") == "supervisor":                    
@@ -118,6 +121,7 @@ class allusersAPI(APIView):
 
 
 class updatesupervisorAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def patch(self, request):
       try:
         instance = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -155,7 +159,8 @@ class updatesupervisorAPI(APIView):
 
 
 class deletesupervisorAPI(APIView):
-      def delete(self, request, pk):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, pk):
         try:
             my_object = supervisor.objects.get(pk=pk, deleted_at=None)
             my_object.deleted_at = timezone.now()
@@ -185,6 +190,7 @@ class deletesupervisorAPI(APIView):
 
 
 class updatestudentAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def patch(self, request):
       try:
         sup = teamMember.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -221,8 +227,8 @@ class updatestudentAPI(APIView):
                 )
 
 class deletestudentAPI(APIView):
-
-      def delete(self, request, pk):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, pk):
         try:
             my_object = teamMember.objects.get(pk=pk, deleted_at=None)
             my_object.deleted_at = timezone.now()
@@ -247,6 +253,7 @@ class deletestudentAPI(APIView):
 
 
 class studentlistAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         sup = teamMember.objects.filter(deleted_at=None)
         serialize = updateStudentSerializer(sup, many=True)   
