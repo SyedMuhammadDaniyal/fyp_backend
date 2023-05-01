@@ -1,6 +1,15 @@
-from rest_framework import generics
-from rest_framework.views import APIView 
+import base64
+
+from rest_framework.views import APIView
 from milestone.serializers import milestoneSerializer
+from core.models import milestone, project, supervisor
+from rest_framework.response import Response
+from django.utils import timezone
+from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+
+from fyp_management.settings import imagekit
+from milestone.models import MilestoneWork
+from core.models import milestone
 from core.models import milestone, project, supervisor, teamMember, User
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -174,6 +183,74 @@ class GetAllMilestones(APIView):
                         "body": [],
                         "exception": None
                     })
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e)
+            })
+        
+
+class MilestoneSubmissionView(APIView):
+    def get(self, request):
+        try:
+            milestone_work = MilestoneWork.objects.get(milestone=milestone.objects.get(id=request.GET.get("milestone_id")))
+            response = {
+                "title": milestone_work.title,
+                "description": milestone_work.description,
+                "document": milestone_work.document,
+                "milestone_id": milestone_work.milestone.id
+            }
+            return Response({
+                "status": 200,
+                "message": "Success",
+                "body": response,
+                "exception": None
+            })
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e)
+            })
+
+    def post(self, request):
+        try:
+            options = UploadFileRequestOptions(
+                use_unique_file_name=False,
+                tags=['abc', 'def'],
+                folder=f"/milestone/work/{request.data.get('milestone_id')}/",
+            )
+            with request.FILES['file'].open("rb") as file:
+                file = base64.b64encode(file.read())
+            # Upload the file to ImageKit
+            upload_response = imagekit.upload_file(
+                file=file,
+                file_name=f"{request.FILES['file'].name}",
+                options=options
+            )
+
+            try:
+                milestone_work = MilestoneWork.objects.get(milestone=milestone.objects.get(id=request.data.get("milestone_id")))
+                milestone_work.title=request.data.get("title"),
+                milestone_work.description=request.data.get("description"),
+                milestone_work.document=upload_response.url
+                milestone_work.save()
+            except:
+                MilestoneWork.objects.create(
+                    milestone=milestone.objects.get(id=request.data.get("milestone_id")),
+                    title=request.data.get("title"),
+                    description=request.data.get("description"),
+                    document=upload_response.url
+                )
+            return Response({
+                "status": 200,
+                "message": "Success",
+                "body": {},
+                "exception": None
+            })
         except Exception as e:
             return Response({
                 "status": 404,
