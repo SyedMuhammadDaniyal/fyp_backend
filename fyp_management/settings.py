@@ -1,4 +1,5 @@
 
+from imagekitio import ImageKit
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -137,3 +138,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SDK initialization
+
+# SDK initialization
+
+imagekit = ImageKit(
+    private_key='private_T5sMB6aKYF9ypKgl6DYApCwaoFE=',
+    public_key='public_h6pDD6DN/ayI0F2rhaYbPBorrew=',
+    url_endpoint='https://ik.imagekit.io/xmsftyf5u'
+)

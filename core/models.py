@@ -94,6 +94,7 @@ class milestone(BaseModel):
     milestone_details = models.CharField(max_length=500)
     rubrics = models.JSONField(null=True, blank=True)
     # fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
+    marks = models.FloatField(null=True, blank=True)
 
 class notification(BaseModel):
     title = models.CharField(max_length=75)
