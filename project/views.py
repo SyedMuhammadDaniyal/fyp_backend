@@ -30,7 +30,7 @@ class projectAPIView(APIView):
                     "status": 422,
                     "message": serialize.errors,
                     "body":{},
-                    "exception": "some exception"
+                    "exception": "Validation Error",
                     }
                 )
         except Exception as e:
