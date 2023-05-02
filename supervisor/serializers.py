@@ -14,10 +14,9 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
     field_of_interest = serializers.CharField(required=True)
     password_return = serializers.ReadOnlyField(source='user.password')
     
-
     class Meta:
         model = supervisor
-        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department', 'designation', 'password_return']
+        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department', 'designation']
     
     
     def create(self, validated_data):
@@ -27,7 +26,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         password=validated_data['password'],
         department = validated_data['user']['department'],
         phoneno = validated_data['user']['phoneno'],
-        is_active = False,
+        is_active = True,
         role=User.SUPERVISOR
         )
         # department_id = validated_data.pop('department')
@@ -48,7 +47,6 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
 
 class updateSupervisorSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     name = serializers.CharField(source='user.name', required=True)
     faculty_no = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
@@ -58,7 +56,7 @@ class updateSupervisorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = supervisor
-        fields = ['id', 'faculty_no', 'field_of_interest', 'designation', 'department', 'email', 'name', 'password', 'phoneno']
+        fields = ['id', 'faculty_no', 'field_of_interest', 'designation', 'department', 'email', 'name', 'phoneno']
 
     def update(self, instance, validated_data):
         # Update supervisor fields
@@ -71,12 +69,10 @@ class updateSupervisorSerializer(serializers.ModelSerializer):
         user = instance.user
         email=validated_data['user']['email']
         name=validated_data['user']['name']
-        password=validated_data['password']
         phoneno=validated_data['user']['phoneno']
         dep = validated_data['user']['department']
         user.email = email
         user.name = name
-        user.password = password
         user.phoneno = phoneno
         user.department = dep
         user.save()
