@@ -5,14 +5,12 @@ from django.utils import timezone
 
 class AddSupervisorSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     name = serializers.CharField(source='user.name', required=True)
     phoneno = serializers.CharField(source='user.phoneno', required=True)
     department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
     faculty_no = serializers.CharField(required=True)
     designation = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
-    password_return = serializers.ReadOnlyField(source='user.password')
     
     class Meta:
         model = supervisor
