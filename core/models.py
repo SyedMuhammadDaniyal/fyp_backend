@@ -92,8 +92,8 @@ class milestone(BaseModel):
     document_submission_date = models.DateField()
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
-    rubrics = models.JSONField(null=True, blank=True)
-    # fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
+    rubrics = models.JSONField  ()
+    marks = models.FloatField(null=True, blank=True)
 
 class notification(BaseModel):
     title = models.CharField(max_length=75)
@@ -136,18 +136,3 @@ class teamMember(BaseModel):
     seatno = models.CharField(max_length=50, unique=True)
     enrollmentno = models.CharField(max_length=50, unique=True)
     project = models.ForeignKey(project, null=True, on_delete=models.RESTRICT)
-
-# class Sprint(BaseModel):
-#     project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
-#     milestone = models.ForeignKey("core.milestone", on_delete=models.RESTRICT)
-#     title = models.CharField(max_length=125)
-#     start_date = models.DateField()
-#     end_date = models.DateField()
-
-# class Ticket(BaseModel):
-#     sprint = models.ForeignKey("boards.Sprint", on_delete=models.RESTRICT)
-#     title = models.CharField(max_length=125)
-#     description = models.TextField()
-#     start_date = models.DateField()
-#     end_date = models.DateField()
-#     assignee = models.ForeignKey("core.User", on_delete=models.RESTRICT)
