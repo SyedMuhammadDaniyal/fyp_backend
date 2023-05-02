@@ -136,7 +136,7 @@ class updatesupervisorAPI(APIView):
                     "body": {},
                     "exception": None 
                     }
-                    )
+                )
         else:
             return Response(
                     {
@@ -151,7 +151,7 @@ class updatesupervisorAPI(APIView):
           return Response(       
                 {
                 "status": 404,
-                "message": "Some e",#serialize.errors
+                "message": "Some exception",
                 "body": {},
                 "exception": str(e) 
                 }
@@ -220,7 +220,7 @@ class updatestudentAPI(APIView):
           return Response(       
                 {
                 "status": 404,
-                "message": serialize.errors,
+                "message": "some exception",
                 "body": {},
                 "exception": str(e) 
                 }
