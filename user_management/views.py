@@ -19,7 +19,6 @@ class CreateUserView(APIView):
             if request.data.get("role") == User.SUPERVISOR:
                 serialize = AddSupervisorSerializer(data=request.data)
                 if serialize.is_valid():
-                    # print(request.data)
                     serialize.save()
                     return Response(
                         {
@@ -41,7 +40,6 @@ class CreateUserView(APIView):
             elif request.data.get("role") == User.STUDENT:            
                 serialize = teamMemberSerializer(data=request.data)                        
                 if serialize.is_valid():
-                    # print(request.data)
                     serialize.save()
                     return Response(
                         {
@@ -166,7 +164,6 @@ class deletesupervisorAPI(APIView):
             my_object.deleted_at = timezone.now()
             pro = project.objects.filter(supervisor=pk, deleted_at=None, status='Ongoing')
             for p in pro:
-                print(p)
                 p.supervisor = None
                 p.save()
             my_object.save()

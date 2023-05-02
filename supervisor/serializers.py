@@ -18,7 +18,6 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         model = supervisor
         fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department', 'designation']
     
-    
     def create(self, validated_data):
         sp = User.objects.create(
         email=validated_data['user']['email'],
@@ -53,7 +52,6 @@ class updateSupervisorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = supervisor
-        fields = ['id', 'faculty_no', 'field_of_interest', 'designation', 'department']
 
     def update(self, instance, validated_data):
         # Update supervisor fields
@@ -64,10 +62,10 @@ class updateSupervisorSerializer(serializers.ModelSerializer):
         
         # Update related user department field
         user = instance.user
-        dep = validated_data['user']['department']
         user.department = dep
         user.save()
 
         # Save and return updated supervisor instance
+
         instance.save()
         return instance

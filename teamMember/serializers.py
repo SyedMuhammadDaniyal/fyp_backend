@@ -11,7 +11,6 @@ class teamMemberSerializer(serializers.ModelSerializer):
     rollno = serializers.CharField(required=True)
     seatno = serializers.CharField(required=True)
     enrollmentno = serializers.CharField(required=True)
-    # phoneno = serializers.CharField(required=True)
     
     class Meta:
         model = teamMember
@@ -48,15 +47,37 @@ class teamMemberSerializer(serializers.ModelSerializer):
 #         fields = '__all__'
 
 class updateStudentSerializer(serializers.ModelSerializer):
-    # email = serializers.EmailField(source='user.email', read_only=True)
-    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    # name = serializers.CharField(source='user.name', read_only=True)
-    # department = serializers.PrimaryKeyRelatedField(source='user.department', read_only=True)
+    email = serializers.EmailField(source='user.email', required=True)
+    name = serializers.CharField(source='user.name', required=True)
+    phoneno = serializers.CharField(source='user.phoneno', required=True)
+    department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
     rollno = serializers.CharField(required=True)
     seatno = serializers.CharField(required=True)
     enrollmentno = serializers.CharField(required=True)
-    # phoneno = serializers.CharField(required=True)
 
     class Meta:
         model = teamMember
-        fields = ['id','rollno', 'seatno', 'enrollmentno']
+        fields = ['id','email','name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department']
+
+    def update(self, instance, validated_data):
+        # Update supervisor fields
+        instance.rollno = validated_data.get('rollno', instance.rollno)
+        instance.seatno = validated_data.get('seatno', instance.seatno)
+        instance.enrollmentno = validated_data.get('enrollmentno', instance.enrollmentno)
+
+        
+        # Update related user department field
+        user = instance.user
+        email=validated_data['user']['email']
+        name=validated_data['user']['name']
+        phoneno=validated_data['user']['phoneno']
+        dep = validated_data['user']['department']
+        user.email = email
+        user.name = name
+        user.phoneno = phoneno
+        user.department = dep
+        user.save()
+
+        # Save and return updated supervisor instance
+        instance.save()
+        return instance
