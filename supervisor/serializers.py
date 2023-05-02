@@ -12,11 +12,13 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
     faculty_no = serializers.CharField(required=True)
     designation = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
+    password_return = serializers.ReadOnlyField(source='user.password')
     
 
     class Meta:
         model = supervisor
         fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department', 'designation']
+    
     
     def create(self, validated_data):
         sp = User.objects.create(
@@ -45,13 +47,18 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
 
 
 class updateSupervisorSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='user.email', required=True)
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    name = serializers.CharField(source='user.name', required=True)
     faculty_no = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
     designation = serializers.CharField(required=True)
     department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
+    phoneno = serializers.CharField(source='user.phoneno', required=True)
 
     class Meta:
         model = supervisor
+        fields = ['id', 'faculty_no', 'field_of_interest', 'designation', 'department', 'email', 'name', 'password', 'phoneno']
 
     def update(self, instance, validated_data):
         # Update supervisor fields
@@ -62,9 +69,17 @@ class updateSupervisorSerializer(serializers.ModelSerializer):
         
         # Update related user department field
         user = instance.user
+        email=validated_data['user']['email']
+        name=validated_data['user']['name']
+        password=validated_data['password']
+        phoneno=validated_data['user']['phoneno']
+        dep = validated_data['user']['department']
+        user.email = email
+        user.name = name
+        user.password = password
+        user.phoneno = phoneno
         user.department = dep
         user.save()
-
         # Save and return updated supervisor instance
 
         instance.save()
