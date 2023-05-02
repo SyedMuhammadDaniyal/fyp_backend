@@ -155,7 +155,7 @@ class updatenotificationAPI(APIView):
     permission_classes = [IsAuthenticated]
     def patch(self, request):
         try:
-            print(request.data)
+            # print(request.data)
             sup = notification.objects.get(id=request.data.get("id"), deleted_at=None)
             serialize = notificationSerializer(sup,data=request.data)
             if serialize.is_valid():
@@ -183,7 +183,7 @@ class updatenotificationAPI(APIView):
             return Response(       
                     {
                     "status": 404,
-                    "message": serialize.errors,
+                    "message": "some exception",
                     "body": {},
                     "exception": str(e) 
                     }

@@ -12,6 +12,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
     faculty_no = serializers.CharField(required=True)
     designation = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
+    password_return = serializers.ReadOnlyField(source='user.password')
     
     class Meta:
         model = supervisor
