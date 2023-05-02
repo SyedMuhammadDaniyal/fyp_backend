@@ -9,8 +9,8 @@ class milestoneSerializer(serializers.ModelSerializer):
     milestone_defending_date = serializers.DateField(required=True)
     milestone_details = serializers.CharField(required=True)
     rubrics = serializers.JSONField(required=True)
-
+    marks = serializers.FloatField(required=True)
     class Meta:
         model = milestone
         # fields = "__all__"
-        fields = ['id','milestone_name', 'document_submission_date', 'milestone_defending_date', 'milestone_details', 'rubrics']    
+        fields = ['id','milestone_name', 'document_submission_date', 'milestone_defending_date', 'milestone_details', 'rubrics', 'marks']
