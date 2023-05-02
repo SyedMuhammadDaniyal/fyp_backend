@@ -109,7 +109,7 @@ class updatemilestoneAPI(APIView):
             return Response(       
                 {
                 "status": 404,
-                "message": serialize.errors,
+                "message": "Some exception",
                 "body": {},
                 "exception": str(e) 
                 }

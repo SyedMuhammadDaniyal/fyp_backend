@@ -18,7 +18,7 @@ class projectSerializer(serializers.ModelSerializer):
       year = int(value)
       current_year = datetime.now().year
       if year > current_year:
-        raise serializers.ValidationError("Year must be between 2000 and 2023")
+        raise serializers.ValidationError("year should be valid, before "+ str(current_year))
     except ValueError:
         raise serializers.ValidationError("Year must be a valid integer")
     return value

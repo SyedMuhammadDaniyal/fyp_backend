@@ -8,8 +8,7 @@ class milestoneSerializer(serializers.ModelSerializer):
     document_submission_date = serializers.DateField(required=True)
     milestone_defending_date = serializers.DateField(required=True)
     milestone_details = serializers.CharField(required=True)
-    rubrics = serializers.JSONField(required=False)
-    # fyp_panel = serializers.PrimaryKeyRelatedField(queryset=fyppanel.objects.all())
+    rubrics = serializers.JSONField(required=True)
 
     class Meta:
         model = milestone

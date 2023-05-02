@@ -155,6 +155,7 @@ class updatenotificationAPI(APIView):
     permission_classes = [IsAuthenticated]
     def patch(self, request):
         try:
+            print(request.data)
             sup = notification.objects.get(id=request.data.get("id"), deleted_at=None)
             serialize = notificationSerializer(sup,data=request.data)
             if serialize.is_valid():
