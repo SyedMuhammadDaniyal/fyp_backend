@@ -93,7 +93,7 @@ class milestone(BaseModel):
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
     rubrics = models.JSONField()
-    marks = models.FloatField(null=True, blank=True)
+    marks = models.FloatField(default=50.0)
 
 class notification(BaseModel):
     title = models.CharField(max_length=75)

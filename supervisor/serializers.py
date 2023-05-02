@@ -81,5 +81,6 @@ class updateSupervisorSerializer(serializers.ModelSerializer):
         user.department = dep
         user.save()
         # Save and return updated supervisor instance
+
         instance.save()
         return instance
