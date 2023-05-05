@@ -18,10 +18,15 @@ class RegisterSerializer(serializers.Serializer):
       return value
   
   def validate_phoneno(self, value):
-    if len(value) < 11:
+    if len(value) != 11:
         raise serializers.ValidationError("Phone number must be at least 11 characters.")
     return value
-  
+
+  def validate_designation(self, value):
+    if value not in ['Professor', 'Assistant Professor', 'Associate Professor', 'Lecturer', 'Junior Lecturer']:
+      raise serializers.ValidationError("Invalid designation")
+    return value
+
   class Meta:
     model = User
     fields = ['email', 'password', 'name', 'phoneno', 'department']

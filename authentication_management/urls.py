@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterUserAPIView, LoginUserApi, getfyppanel
+from .views import RegisterUserAPIView, LoginUserApi
 from project.views import projectAPIView, projectlistAPI, updateprojectAPI, deleteprojectAPI, addteammemberAPI, allprojectAPI, changesupervisorAPI
 from milestone.views import createmilestoneAPI, allmilestoneAPI, updatemilestoneAPI, deletemilestoneAPI, GetAllMilestones, MilestoneSubmissionView
 from supervisor.views import supervisorView
@@ -8,10 +8,7 @@ from notifications.views import createnotificationAPI, allnotificationsAPI, geta
 from teamMember.views import RegisterteamMemberAPIView
 from user_management.views import CreateUserView, allusersAPI, updatesupervisorAPI, studentlistAPI, deletesupervisorAPI, updatestudentAPI, deletestudentAPI
 from sprint.views import createsprintAPI, updatesprintAPI, deletesprintAPI, getspecificsprintAPI, allsprintAPI, createticketAPI, allticketAPI, deleteticketAPI, updateticketAPI, getspecificticketAPI
-# from rest_framework_simplejwt.views import (
-#     TokenObtainPairView,
-#     TokenRefreshView,
-# )
+
 
 urlpatterns = [
   path('registerpmo',RegisterUserAPIView.as_view()),

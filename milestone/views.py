@@ -1,7 +1,7 @@
 import base64
 
 from rest_framework.views import APIView
-from milestone.serializers import milestoneSerializer
+from milestone.serializers import milestoneSerializer, milestoneworkSerializer
 from core.models import milestone, project, supervisor
 from rest_framework.response import Response
 from django.utils import timezone
@@ -195,17 +195,19 @@ class GetAllMilestones(APIView):
 class MilestoneSubmissionView(APIView):
     def get(self, request):
         try:
-            milestone_work = MilestoneWork.objects.get(milestone=milestone.objects.get(id=request.GET.get("milestone_id")))
-            response = {
-                "title": milestone_work.title,
-                "description": milestone_work.description,
-                "document": milestone_work.document,
-                "milestone_id": milestone_work.milestone.id
-            }
+            milestone_work = MilestoneWork.objects.filter(milestone=milestone.objects.get(id=request.GET.get("milestone_id")))
+            serialize = milestoneworkSerializer(milestone_work,many=True)
+            # response = {
+            #     # "title": milestone_work.title,
+            #     "description": milestone_work.description,
+            #     "document": milestone_work.document,
+            #     "milestone_id": milestone_work.milestone.id,
+            #     "project_id":milestone_work.project_id
+            # }
             return Response({
                 "status": 200,
                 "message": "Success",
-                "body": response,
+                "body": serialize.data,
                 "exception": None
             })
         except Exception as e:
@@ -231,26 +233,26 @@ class MilestoneSubmissionView(APIView):
                 file_name=f"{request.FILES['file'].name}",
                 options=options
             )
-
-            try:
-                milestone_work = MilestoneWork.objects.get(milestone=milestone.objects.get(id=request.data.get("milestone_id")))
-                milestone_work.title=request.data.get("title"),
-                milestone_work.description=request.data.get("description"),
-                milestone_work.document=upload_response.url
-                milestone_work.save()
-            except:
-                MilestoneWork.objects.create(
-                    milestone=milestone.objects.get(id=request.data.get("milestone_id")),
-                    title=request.data.get("title"),
-                    description=request.data.get("description"),
-                    document=upload_response.url
-                )
+            # try:
+            #     milestone_work = MilestoneWork.objects.get(milestone=milestone.objects.get(id=request.data.get("milestone_id"), deleted_at=None))
+            #     milestone_work.title=request.data.get("title"),
+            #     milestone_work.description=request.data.get("description"),
+            #     milestone_work.document=upload_response.url
+            #     milestone_work.save()
+            # except:
+            MilestoneWork.objects.create(
+                milestone=milestone.objects.get(id=request.data.get("milestone_id")),
+                title=request.data.get("title"),
+                description=request.data.get("description"),
+                project=project.objects.get(id=request.data.get("project_id")),
+                document=upload_response.url
+            )
             return Response({
-                "status": 200,
-                "message": "Success",
-                "body": {},
-                "exception": None
-            })
+            "status": 200,
+            "message": "Success",
+            "body": {},
+            "exception": None
+        })
         except Exception as e:
             return Response({
                 "status": 404,
