@@ -8,6 +8,4 @@ urlpatterns = [
   path('admin/', admin.site.urls),
   path('',include('authentication_management.urls')),
   path('api-token-auth', views.obtain_auth_token),
-  path("boards", include("boards.urls")),
-  path("milestone/",include("milestone.urls"))
 ]

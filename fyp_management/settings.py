@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'teamMember',
     "user_management",
-    "boards",
     "sprint",
 ]
 
@@ -149,6 +148,7 @@ imagekit = ImageKit(
     public_key='public_jRJ6vDMoNvBcsC7VPMaf8IZTmaU=',
     url_endpoint='https://ik.imagekit.io/htnsr3l8u'
 )
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
