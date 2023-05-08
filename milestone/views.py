@@ -18,7 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Milestonemarks
 # # Create your views here.
 class createmilestoneAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def post(self, request):
         try:
             serialize = milestoneSerializer(data=request.data)
@@ -28,22 +28,22 @@ class createmilestoneAPI(APIView):
                 for p in projects:
                     p.milestone.add(milestone_obj)
                 return Response(
-                {
-                "status": 200,
-                "message": "Success",
-                "body": {},
-                "exception": None
-                }
-            )
+                    {
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None
+                    }
+                )
             else:
                 return Response(
-                {
-                "status": 422,
-                "message": serialize.errors,
-                "body": {},
-                "exception": "some exception"
-                }
-            )
+                    {
+                    "status": 422,
+                    "message": serialize.errors,
+                    "body": {},
+                    "exception": "some exception"
+                    }
+                )
         except Exception as e:
           return Response(       
                 {
@@ -55,7 +55,7 @@ class createmilestoneAPI(APIView):
             )
 
 class allmilestoneAPI(APIView):
-    permission_classes = [IsAuthenticated|IsFYPPanel]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
             mil = milestone.objects.filter(deleted_at=None)
@@ -80,7 +80,7 @@ class allmilestoneAPI(APIView):
             )
 
 class updatemilestoneAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
         try:
             sup = milestone.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -116,7 +116,7 @@ class updatemilestoneAPI(APIView):
             )
 
 class deletemilestoneAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def delete(self, request, pk):
         try:
             my_object = milestone.objects.get(pk=pk, deleted_at=None)
@@ -124,25 +124,25 @@ class deletemilestoneAPI(APIView):
             my_object.save()
         except milestone.DoesNotExist:
             return Response(
-                        {
-                        "status": 404,
-                        "message": "Not Found",
-                        "body": {},
-                        "exception": None 
-                        }
-                    )
-        return Response(
-                        {
-                        "status": 200,
-                        "message": "Successfuly deleted",
-                        "body": {},
-                        "exception": None 
-                        }
-                    )
+                {
+                "status": 404,
+                "message": "Not Found",
+                "body": {},
+                "exception": None 
+                }
+            )
+        return Response({
+            "status": 200,
+            "message": "Successfuly deleted",
+            "body": {},
+            "exception": None 
+            }
+        )
 
 
 class GetAllMilestones(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
+
     def get(self, request):
         try:
             if request.user.role == User.SUPERVISOR:
@@ -156,14 +156,16 @@ class GetAllMilestones(APIView):
                         "message": "Success",
                         "body": serializer.data,
                         "exception": None
-                    })
+                        }
+                    )
                 else:
                     return Response({
                         "status": 200,
                         "message": "Success",
                         "body": [],
                         "exception": None
-                    })
+                        }
+                    )
             elif request.user.role == User.STUDENT:
                 tm = teamMember.objects.get(user=request.user, deleted_at=None)
                 pro = tm.project
@@ -175,25 +177,28 @@ class GetAllMilestones(APIView):
                         "message": "Success",
                         "body": serializer.data,
                         "exception": None
-                    })
+                        }
+                    )
                 else:
                     return Response({
                         "status": 200,
                         "message": "Success",
                         "body": [],
                         "exception": None
-                    })
+                        }
+                    )
         except Exception as e:
             return Response({
                 "status": 404,
                 "message": "some exception",
                 "body": {},
                 "exception": str(e)
-            })
+                }
+            )
         
 
-class MilestoneSubmissionView(APIView):
-    permission_classes = [IsAuthenticated|IsStudent]
+class SubmissionView(APIView):
+    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
 
     def get(self, request):
         try:
@@ -204,14 +209,19 @@ class MilestoneSubmissionView(APIView):
                 "message": "Success",
                 "body": serialize.data,
                 "exception": None
-            })
+                }
+            )
         except Exception as e:
             return Response({
                 "status": 404,
                 "message": "some exception",
                 "body": {},
                 "exception": str(e)
-            })
+                }
+            )
+
+class MilestoneSubmissionView(APIView):
+    permission_classes = [IsAuthenticated & IsStudent]
 
     def post(self, request):
         try:
@@ -243,7 +253,8 @@ class MilestoneSubmissionView(APIView):
                     "message": "Success",
                     "body": {},
                     "exception": None
-                })
+                    }
+                )
             except:
                 MilestoneWork.objects.create(
                     milestone=milestone.objects.get(id=request.data.get("milestone_id")),
@@ -257,18 +268,20 @@ class MilestoneSubmissionView(APIView):
                     "message": "Success",
                     "body": {},
                     "exception": None
-                })
+                    }
+                )
         except Exception as e:
             return Response({
                 "status": 404,
                 "message": "some exception",
                 "body": {},
                 "exception": str(e)
-            })
+                }
+            )
 
 
 class givemarksView(APIView):
-    permission_classes = [IsAuthenticated|IsFYPPanel|IsSupervisor]
+    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
     
     def post(self, request):
         try:
@@ -287,22 +300,22 @@ class givemarksView(APIView):
                 if serialize.is_valid():
                     serialize.save()
                     return Response(
-                    {
-                    "status": 200,
-                    "message": "Success",
-                    "body": {},
-                    "exception": None
-                    }
-                )
+                        {
+                        "status": 200,
+                        "message": "Success",
+                        "body": {},
+                        "exception": None
+                        }
+                    )
                 else:
                     return Response(
-                    {
-                    "status": 422,
-                    "message": serialize.errors,
-                    "body": {},
-                    "exception": "some exception"
-                    }
-                )
+                        {
+                        "status": 422,
+                        "message": serialize.errors,
+                        "body": {},
+                        "exception": "some exception"
+                        }
+                    )
         except Exception as e:
           return Response(       
                 {
@@ -314,7 +327,7 @@ class givemarksView(APIView):
             )
 
 class marksView(APIView):
-    permission_classes = [IsAuthenticated|IsFYPPanel|IsSupervisor]
+    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
 
     def get(self, request):
         try:
@@ -325,26 +338,26 @@ class marksView(APIView):
             date_difference = current_date - milestone_date
             if date_difference.days == 0 or date_difference.days < 0:
                 return Response(
-                {
-                "status": 200,
-                "message": "Marks are updated after "+str(milestone_date)+" date",
-                "body": {},
-                "exception": None
-                }
-            )
+                    {
+                    "status": 200,
+                    "message": "Marks are updated after "+str(milestone_date)+" date",
+                    "body": {},
+                    "exception": None
+                    }
+                )
             else:
                 mark = []
                 for m in mk:
                     mark.append(m.marks)
                 if len(mark) == 0:
                     return Response(       
-                {
-                "status": 400,
-                "message": "Doest not have Marks Rightnow",
-                "body": {},
-                "exception": "zero division" 
-                }
-            )
+                        {
+                        "status": 400,
+                        "message": "Doest not have Marks Rightnow",
+                        "body": {},
+                        "exception": "zero division" 
+                        }
+                    )
                 else:
                     average = sum(mark)/len(mark)
                     return Response(

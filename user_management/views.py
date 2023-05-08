@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from supervisor.serializers import AddSupervisorSerializer, updateSupervisorSerializer
 from teamMember.serializers import teamMemberSerializer, updateStudentSerializer
 from core.models import User, teamMember, supervisor, project
@@ -11,7 +12,7 @@ from django.db import transaction
 
 # Create your views here.
 class CreateUserView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     
     @transaction.atomic
     def post(self, request):
@@ -71,7 +72,7 @@ class CreateUserView(APIView):
             
 
 class allusersAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
             if request.GET.get("role") == "supervisor":                    
@@ -119,7 +120,7 @@ class allusersAPI(APIView):
 
 
 class updatesupervisorAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
       try:
         instance = supervisor.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -157,7 +158,7 @@ class updatesupervisorAPI(APIView):
 
 
 class deletesupervisorAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def delete(self, request, pk):
         try:
             my_object = supervisor.objects.get(pk=pk, deleted_at=None)
@@ -187,7 +188,7 @@ class deletesupervisorAPI(APIView):
 
 
 class updatestudentAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
       try:
         sup = teamMember.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -211,8 +212,7 @@ class updatestudentAPI(APIView):
                     "body": {},
                     "exception": "some exception" 
                     }
-                )
-            
+                )           
       except Exception as e:
           return Response(       
                 {
@@ -221,10 +221,10 @@ class updatestudentAPI(APIView):
                 "body": {},
                 "exception": str(e) 
                 }
-                )
+            )
 
 class deletestudentAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def delete(self, request, pk):
         try:
             my_object = teamMember.objects.get(pk=pk, deleted_at=None)
@@ -250,16 +250,27 @@ class deletestudentAPI(APIView):
 
 
 class studentlistAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsSupervisor]
     def get(self, request):
-        sup = teamMember.objects.filter(deleted_at=None)
-        serialize = updateStudentSerializer(sup, many=True)   
-        return Response(
-                        {
-                        "data":serialize.data,
-                        "status": 200,
-                        "message": "Success",
-                        "body": {},
-                        "exception": None 
-                        }
-                    )
+        try:
+            department_obj = request.user.department
+            tm = teamMember.objects.filter(project__department=department_obj, deleted_at=None)
+            serialize = updateStudentSerializer(tm, many=True)        
+            return Response(
+                {
+                "data":serialize.data,
+                "status": 200,
+                "message": "Success",
+                "body": {},
+                "exception": None 
+                }
+            )
+        except Exception as e:
+            return Response(       
+                {
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e) 
+                }
+            )

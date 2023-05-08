@@ -1,4 +1,5 @@
 from rest_framework import generics
+from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from notifications.serializers import notificationSerializer
@@ -8,7 +9,7 @@ from django.utils import timezone
 # # Create your views here.
 
 class createnotificationAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def post(self, request):
         try:
             serialize = notificationSerializer(data=request.data)
@@ -59,7 +60,7 @@ class createnotificationAPI(APIView):
             )
 
 class allnotificationsAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
             my_objects = notification.objects.filter(deleted_at=None)
@@ -80,7 +81,7 @@ class allnotificationsAPI(APIView):
 
 
 class getallnotificationsAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & (IsStudent | IsSupervisor)]
     def get(self, request):
         try:
             if request.user.role == User.SUPERVISOR:
@@ -127,7 +128,7 @@ class getallnotificationsAPI(APIView):
             })
 
 class deletenotificationAPI(APIView):    
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def delete(self, request, pk):
         try:
             my_object = notification.objects.get(pk=pk, deleted_at=None)
@@ -152,7 +153,7 @@ class deletenotificationAPI(APIView):
                     )
 
 class updatenotificationAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
         try:
             # print(request.data)

@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import RegisterUserAPIView, LoginUserApi
 from project.views import projectAPIView, projectlistAPI, updateprojectAPI, deleteprojectAPI, addteammemberAPI, allprojectAPI, changesupervisorAPI
-from milestone.views import createmilestoneAPI, allmilestoneAPI, updatemilestoneAPI, deletemilestoneAPI, GetAllMilestones, MilestoneSubmissionView, marksView, givemarksView
+from milestone.views import createmilestoneAPI, allmilestoneAPI, updatemilestoneAPI, deletemilestoneAPI, GetAllMilestones, SubmissionView, MilestoneSubmissionView, marksView, givemarksView
 from supervisor.views import supervisorView
 from department.views import departmentAPI
 from notifications.views import createnotificationAPI, allnotificationsAPI, getallnotificationsAPI, deletenotificationAPI, updatenotificationAPI
@@ -48,7 +48,8 @@ urlpatterns = [
   path("deleteticket/<int:pk>",deleteticketAPI.as_view()),
   path("updateticket", updateticketAPI.as_view()),
   path('getspecificticket', getspecificticketAPI.as_view()),
-  path("work", MilestoneSubmissionView.as_view()),
+  path("work", SubmissionView.as_view()),
+  path("submitwork", MilestoneSubmissionView.as_view()),
   path("marks", marksView.as_view()),
-  path('givemarks', givemarksView.as_view())
+  path('givemarks', givemarksView.as_view()),
 ]

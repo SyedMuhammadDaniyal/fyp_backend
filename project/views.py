@@ -2,7 +2,7 @@ from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from core.models import User, fyppanel, project, supervisor, teamMember
 from project.serializers import projectlistSerializer, projectSerializer
 
@@ -10,7 +10,7 @@ from project.serializers import projectlistSerializer, projectSerializer
 
 # # Create your views here.
 class projectAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def post(self, request):
         try:
             serialize = projectSerializer(data=request.data)
@@ -45,7 +45,7 @@ class projectAPIView(APIView):
 
 
 class projectlistAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
     def get(self, request):
         try:
             if request.user.role == User.SUPERVISOR:
@@ -86,7 +86,7 @@ class projectlistAPI(APIView):
         
 
 class updateprojectAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
         try:
             sup = project.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -123,7 +123,7 @@ class updateprojectAPI(APIView):
                 )
 
 class deleteprojectAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def delete(self, request, pk):
         try:
             my_object = project.objects.get(pk=pk, deleted_at=None)
@@ -148,7 +148,7 @@ class deleteprojectAPI(APIView):
                     )
 
 class addteammemberAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsSupervisor]
     def post(self, request):
         try:
             pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
@@ -210,7 +210,7 @@ class addteammemberAPI(APIView):
             
     
 class allprojectAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
             pmo = fyppanel.objects.get(user=request.user, deleted_at=None)
@@ -231,7 +231,7 @@ class allprojectAPI(APIView):
             })
 
 class changesupervisorAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
         try:
             pro = project.objects.get(id=request.data.get("pro_id"), deleted_at=None)

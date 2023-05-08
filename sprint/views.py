@@ -2,7 +2,7 @@ from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from core.models import User, project, supervisor, teamMember
 
 from .models import Sprint, Ticket
@@ -11,7 +11,7 @@ from .serializers import sprintSerializer, ticketSerializer
 # Create your views here.
 
 class createsprintAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsSupervisor]
     def post(self, request):
         try:
             serialize = sprintSerializer(data=request.data)
@@ -45,7 +45,7 @@ class createsprintAPI(APIView):
             )
 
 class getspecificsprintAPI(APIView):
-        permission_classes = [IsAuthenticated]
+        permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)] 
         def get(self, request):
             try:
                 if request.user.role == User.SUPERVISOR:
@@ -88,7 +88,7 @@ class getspecificsprintAPI(APIView):
 
 
 class updatesprintAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsSupervisor]
     def patch(self, request):
         try:
             sp = Sprint.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -125,7 +125,7 @@ class updatesprintAPI(APIView):
                 )
 
 class deletesprintAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsSupervisor]
     def delete(self, request, pk):
         try:
             my_object = Sprint.objects.get(pk=pk, deleted_at=None)
@@ -150,7 +150,7 @@ class deletesprintAPI(APIView):
                     )
 
 class allsprintAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
             sp = Sprint.objects.filter(project=request.data.get("pro_id"), deleted_at=None)
@@ -175,7 +175,7 @@ class allsprintAPI(APIView):
                 )
         
 class createticketAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & (IsStudent | IsSupervisor)]
     def post(self, request):
         try:
             serialize = ticketSerializer(data=request.data)
@@ -209,7 +209,7 @@ class createticketAPI(APIView):
             )
 
 class allticketAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
             tickets = Ticket.objects.filter(sprint=request.data.get("sp_id"), deleted_at=None)
@@ -234,7 +234,7 @@ class allticketAPI(APIView):
                 )
 
 class deleteticketAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
     def delete(self, request, pk):
         try:
             tc = Ticket.objects.get(id=pk, deleted_at=None)
@@ -269,7 +269,7 @@ class deleteticketAPI(APIView):
                     )                    
 
 class updateticketAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
     def patch(self, request):
         try:
             tc = Ticket.objects.get(id=request.data.get("id"), deleted_at=None)
@@ -306,7 +306,7 @@ class updateticketAPI(APIView):
                 )
 
 class getspecificticketAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
     def get(self, request):
         try:
             if request.user.role == User.SUPERVISOR:
