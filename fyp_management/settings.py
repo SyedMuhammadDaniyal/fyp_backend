@@ -145,9 +145,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SDK initialization
 
 imagekit = ImageKit(
-    private_key='private_T5sMB6aKYF9ypKgl6DYApCwaoFE=',
-    public_key='public_h6pDD6DN/ayI0F2rhaYbPBorrew=',
-    url_endpoint='https://ik.imagekit.io/xmsftyf5u'
+    private_key='private_Jd9VZka5/bXGay4PT+ax18QObaM=',
+    public_key='public_jRJ6vDMoNvBcsC7VPMaf8IZTmaU=',
+    url_endpoint='https://ik.imagekit.io/htnsr3l8u'
 )
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=10),

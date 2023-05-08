@@ -10,3 +10,11 @@ class MilestoneWork(BaseModel):
     description = models.TextField()
     document = models.CharField(max_length=255)
     project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
+
+class Milestonemarks(BaseModel):
+    project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
+    comments = models.CharField(max_length=150)
+    milestone = models.ForeignKey("core.milestone", on_delete=models.RESTRICT)
+    marks = models.FloatField(default=50.0)
+    m_distributor = models.ForeignKey("core.User", on_delete=models.RESTRICT, related_name='m_distributor')
+

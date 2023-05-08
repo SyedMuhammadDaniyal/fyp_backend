@@ -78,3 +78,8 @@ supervisor creation api
     "phone_no":"03121254551",
     "department":3
 }
+
+#final project code
+            pro = project.objects.get(id=request.data.get("project"), deleted_at=None)
+            pro.grade += average
+            pro.save()

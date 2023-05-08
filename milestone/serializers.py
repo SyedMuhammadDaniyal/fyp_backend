@@ -1,5 +1,5 @@
 from core.models import milestone, fyppanel
-from .models import MilestoneWork
+from .models import MilestoneWork, Milestonemarks
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
@@ -23,4 +23,12 @@ class milestoneworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MilestoneWork
+        fields = "__all__"
+
+class milestonemarkSerializer(serializers.ModelSerializer):
+    comments = serializers.CharField(required=True)
+    marks = serializers.FloatField(required=True)
+
+    class Meta:
+        model = Milestonemarks
         fields = "__all__"

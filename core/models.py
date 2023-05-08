@@ -117,7 +117,12 @@ class project(BaseModel):
     description = models.TextField()
     status = models.CharField(max_length=45,default="ongoing")
     domain = models.CharField(max_length=45)
-    grade = models.IntegerField(default=0)
+    grade = models.FloatField(default=0,
+            validators=[
+            MaxValueValidator(200),
+            MinValueValidator(0)
+        ]
+    )
     supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True, related_name="projects")
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
@@ -127,7 +132,7 @@ class project(BaseModel):
 class teamMember(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
     rollno = models.CharField(max_length=50, unique=True)
-    grade = models.IntegerField(default=0,
+    grade = models.FloatField(default=0,
             validators=[
             MaxValueValidator(200),
             MinValueValidator(0)
