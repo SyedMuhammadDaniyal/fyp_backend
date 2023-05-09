@@ -71,15 +71,12 @@ class User(AbstractUser, BaseModel):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    # class Meta:
-    #     unique_together = ('email', 'deleted_at')
-
 class fyppanel(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
     facultyid = models.CharField(max_length=45, unique=True)       
     designation = models.CharField(max_length=45)
     
-
+    
 class supervisor(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT, related_name='user')
     faculty_no = models.CharField(max_length=45, unique=True)
@@ -117,12 +114,7 @@ class project(BaseModel):
     description = models.TextField()
     status = models.CharField(max_length=45,default="ongoing")
     domain = models.CharField(max_length=45)
-    grade = models.FloatField(default=0,
-            validators=[
-            MaxValueValidator(200),
-            MinValueValidator(0)
-        ]
-    )
+    grade = models.FloatField(default=0)
     supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True, related_name="projects")
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
@@ -132,12 +124,7 @@ class project(BaseModel):
 class teamMember(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
     rollno = models.CharField(max_length=50, unique=True)
-    grade = models.FloatField(default=0,
-            validators=[
-            MaxValueValidator(200),
-            MinValueValidator(0)
-        ]
-    )
+    grade = models.FloatField(default=0)
     seatno = models.CharField(max_length=50, unique=True)
     enrollmentno = models.CharField(max_length=50, unique=True)
     project = models.ForeignKey(project, null=True, on_delete=models.RESTRICT)

@@ -11,10 +11,11 @@ class teamMemberSerializer(serializers.ModelSerializer):
     rollno = serializers.CharField(required=True)
     seatno = serializers.CharField(required=True)
     enrollmentno = serializers.CharField(required=True)
-    
+    u_id = serializers.PrimaryKeyRelatedField(read_only = True, source='user.id')
+
     class Meta:
         model = teamMember
-        fields = ['id','email','password','name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department']
+        fields = ['id','email','password','name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department', 'u_id']
     
     def create(self, validated_data):
         tm = User.objects.create(
@@ -23,7 +24,7 @@ class teamMemberSerializer(serializers.ModelSerializer):
         password=validated_data['password'],
         phoneno = validated_data['user']['phoneno'],
         department = validated_data['user']['department'],
-        is_active = True,
+        is_active = False,
         role=User.STUDENT
         )
         # department_id = validated_data.pop('department')

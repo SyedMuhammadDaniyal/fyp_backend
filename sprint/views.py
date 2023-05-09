@@ -118,7 +118,7 @@ class updatesprintAPI(APIView):
             return Response(       
                     {
                     "status": 404,
-                    "message": serialize.errors,
+                    "message": "some exception",
                     "body": {},
                     "exception": str(e) 
                     }
@@ -277,23 +277,23 @@ class updateticketAPI(APIView):
             if serialize.is_valid():
                 serialize.save()
                 return Response(       
-                        {
-                        "data": serialize.data,
-                        "status": 200,
-                        "message": "Success",
-                        "body": {},
-                        "exception": None 
-                        }
-                        )
+                    {
+                    "data": serialize.data,
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
             else:
                 return Response(
-                        {
-                        "status": 422,
-                        "message": serialize.errors,
-                        "body": {},
-                        "exception": "some exception" 
-                        }
-                    )
+                    {
+                    "status": 422,
+                    "message": serialize.errors,
+                    "body": {},
+                    "exception": "some exception" 
+                    }
+                )
                 
         except Exception as e:
             return Response(       
@@ -316,28 +316,28 @@ class getspecificticketAPI(APIView):
                 tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
                 serialize = ticketSerializer(tc, many=True)
                 return Response(       
-                {
-                "data": serialize.data,
-                "status": 200,
-                "message": "Success",
-                "body": {},
-                "exception": None 
-                }
-            )    
+                    {
+                    "data": serialize.data,
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )    
             elif request.user.role == User.STUDENT:
                 tm = teamMember.objects.get(user=request.user, deleted_at=None)
                 sp = Sprint.objects.filter(project__in=[tm.project], deleted_at=None)
                 tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
                 serialize = ticketSerializer(tc, many=True)
                 return Response(       
-                {
-                "data": serialize.data,
-                "status": 200,
-                "message": "Success",
-                "body": {},
-                "exception": None 
-                }
-            )
+                    {
+                    "data": serialize.data,
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
 
         except Exception as e:
             return Response(       

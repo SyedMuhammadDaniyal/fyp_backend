@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from core.models import User, fyppanel, project, supervisor, teamMember
 from project.serializers import projectlistSerializer, projectSerializer
-
+from teamMember.serializers import teamMemberSerializer
 # from rest_framework.permissions import IsAuthenticated
 
 # # Create your views here.
@@ -256,3 +256,21 @@ class changesupervisorAPI(APIView):
                     }
                 )
 
+class studentprojectwiseAPI(APIView):
+    def get(self, request):
+        try:
+            tm = teamMember.objects.filter(project=project.objects.get(id=request.data.get("pro_id")), deleted_at=None)
+            serialize = teamMemberSerializer(tm, many=True)
+            return Response({
+                "status": 200,
+                "message": "Success",
+                "body": serialize.data,
+                "exception": None
+            })
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e)
+            })

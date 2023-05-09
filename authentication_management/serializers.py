@@ -1,7 +1,7 @@
 from core.models import User, fyppanel, department
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-
+import re
 
 class RegisterSerializer(serializers.Serializer):
   email = serializers.EmailField(required=True, source='user.email')
@@ -13,18 +13,18 @@ class RegisterSerializer(serializers.Serializer):
   department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
   
   def validate_name(self, value):
-      if not isinstance(value, str):
-          raise serializers.ValidationError('Name should be a string')
-      return value
+    if any(char.isdigit() for char in value):
+        raise serializers.ValidationError('Name cannot contain digits')
+    return value
   
   def validate_phoneno(self, value):
-    if len(value) != 11:
-        raise serializers.ValidationError("Phone number must be at least 11 characters.")
+    if not re.match(r'^\d{11}$', value):
+      raise serializers.ValidationError("Invalid phone number format check your phone no again")
     return value
 
   def validate_designation(self, value):
-    if value not in ['Professor', 'Assistant Professor', 'Associate Professor', 'Lecturer', 'Junior Lecturer']:
-      raise serializers.ValidationError("Invalid designation")
+    if any(char.isdigit() for char in value):
+        raise serializers.ValidationError('designation cannot contain digits')
     return value
 
   class Meta:
@@ -38,6 +38,7 @@ class RegisterSerializer(serializers.Serializer):
       password=validated_data['password'],
       phoneno=validated_data['user']['phoneno'],
       department=validated_data['user']['department'],
+      is_active = False,
       role=User.PMO
     )
     FYPPANEL = fyppanel.objects.create(

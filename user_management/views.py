@@ -17,6 +17,7 @@ class CreateUserView(APIView):
     @transaction.atomic
     def post(self, request):
         try:
+            print(request.data)
             if request.data.get("role") == User.SUPERVISOR:
                 serialize = AddSupervisorSerializer(data=request.data)
                 if serialize.is_valid():
@@ -254,7 +255,7 @@ class studentlistAPI(APIView):
     def get(self, request):
         try:
             department_obj = request.user.department
-            tm = teamMember.objects.filter(project__department=department_obj, deleted_at=None)
+            tm = teamMember.objects.filter(user__department=department_obj, deleted_at=None)
             serialize = updateStudentSerializer(tm, many=True)        
             return Response(
                 {

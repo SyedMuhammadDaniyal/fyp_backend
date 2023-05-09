@@ -5,6 +5,7 @@ from django.utils import timezone
 
 class AddSupervisorSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     name = serializers.CharField(source='user.name', required=True)
     phoneno = serializers.CharField(source='user.phoneno', required=True)
     department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
@@ -24,7 +25,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         password=validated_data['password'],
         department = validated_data['user']['department'],
         phoneno = validated_data['user']['phoneno'],
-        is_active = True,
+        is_active = False,
         role=User.SUPERVISOR
         )
         # department_id = validated_data.pop('department')
