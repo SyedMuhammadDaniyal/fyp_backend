@@ -96,7 +96,7 @@ class notification(BaseModel):
     title = models.CharField(max_length=75)
     isactive = models.BooleanField(default=False)
     description = models.CharField(max_length=500)
-    createdby = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
+    createdby = models.ForeignKey(User, on_delete=models.RESTRICT)
     createdate = models.DateField()
     createtime = models.TimeField()
 
