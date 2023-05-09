@@ -7,7 +7,6 @@ from fyp_management.permission import IsFYPPanel
 # Create your views here.
 
 class departmentAPI(APIView):
-    permission_classes = [IsFYPPanel]
 
     def get(self, request):
         try:
