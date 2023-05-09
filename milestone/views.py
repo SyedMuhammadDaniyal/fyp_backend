@@ -24,7 +24,7 @@ class createmilestoneAPI(APIView):
             serialize = milestoneSerializer(data=request.data)
             if serialize.is_valid():
                 milestone_obj = serialize.save()
-                projects = project.objects.all()
+                projects = project.objects.filter(status="ongoing", deleted_at=None)
                 for p in projects:
                     p.milestone.add(milestone_obj)
                 return Response(

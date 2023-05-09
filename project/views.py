@@ -257,6 +257,7 @@ class changesupervisorAPI(APIView):
                 )
 
 class studentprojectwiseAPI(APIView):
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent | IsFYPPanel)]
     def get(self, request):
         try:
             tm = teamMember.objects.filter(project=project.objects.get(id=request.data.get("pro_id")), deleted_at=None)

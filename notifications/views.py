@@ -16,8 +16,7 @@ class createnotificationAPI(APIView):
             if request.data.get('id') != None:                
                 if serialize.is_valid():
                     notification_obj = serialize.save()
-                    projects = project.objects.get(id=request.data.get('id')) #get by id (filter)
-                    print(projects)
+                    projects = project.objects.get(id=request.data.get('id'))
                     projects.notification.add(notification_obj)
                     return Response(
                     {
@@ -29,7 +28,7 @@ class createnotificationAPI(APIView):
                 )            
             elif serialize.is_valid():
                 notification_obj = serialize.save()
-                projects = project.objects.all()
+                projects = project.objects.filter(status="ongoing", deleted_at=None)
                 for p in projects:
                     p.notification.add(notification_obj)
                 return Response(
