@@ -60,6 +60,7 @@ class LoginUserApi(APIView):
         id = user.id
         name = user.name
         role = user.role
+        dep = user.department.id
         access_token = RefreshToken.for_user(user).access_token
         return Response(
           {
@@ -68,7 +69,8 @@ class LoginUserApi(APIView):
               "data":serialize.data,
               "id":id,
               "name":name,
-              "role":role
+              "role":role,
+              "dep_id":dep
             },
             "message": "Login Succes",
             "status": 200

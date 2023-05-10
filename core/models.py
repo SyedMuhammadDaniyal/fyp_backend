@@ -8,6 +8,7 @@ from django.contrib.auth.base_user import BaseUserManager
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from datetime import datetime
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     """
@@ -97,6 +98,7 @@ class notification(BaseModel):
     isactive = models.BooleanField(default=False)
     description = models.CharField(max_length=500)
     createdby = models.ForeignKey(User, on_delete=models.RESTRICT)
+    department = models.ForeignKey(department, on_delete=models.RESTRICT)
     createdate = models.DateField()
     createtime = models.TimeField()
 

@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from milestone.serializers import milestoneSerializer, milestoneworkSerializer, milestonemarkSerializer
 from core.models import milestone, project, supervisor
 from rest_framework.response import Response
-from django.utils import timezone
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 from datetime import datetime
 from fyp_management.settings import imagekit
