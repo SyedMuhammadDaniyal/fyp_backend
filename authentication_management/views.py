@@ -54,7 +54,7 @@ class LoginUserApi(APIView):
     serialize = LoginSerializer(data=request.data)
     if serialize.is_valid():
       try:
-        user = User.objects.get(**serialize.validated_data)
+        user = User.objects.get(**serialize.validated_data, deleted_at=None)
         user.is_active = True
         user.save()
         id = user.id

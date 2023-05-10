@@ -5,6 +5,7 @@ from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from supervisor.serializers import AddSupervisorSerializer, updateSupervisorSerializer
 from teamMember.serializers import teamMemberSerializer, updateStudentSerializer
 from core.models import User, teamMember, supervisor, project
+from project.serializers import projectSerializer
 from django.utils import timezone
 from rest_framework import status
 from django.db import transaction
@@ -163,12 +164,31 @@ class deletesupervisorAPI(APIView):
     def delete(self, request, pk):
         try:
             my_object = supervisor.objects.get(pk=pk, deleted_at=None)
-            my_object.deleted_at = timezone.now()
-            pro = project.objects.filter(supervisor=pk, deleted_at=None, status='Ongoing')
-            for p in pro:
-                p.supervisor = None
-                p.save()
-            my_object.save()
+            User_object = User.objects.get(id = my_object.user.id, deleted_at=None)
+            pro = project.objects.filter(supervisor=pk, deleted_at=None, status='ongoing')
+            serialize = projectSerializer(pro, many=True)
+            data = serialize.data
+            projects = [] 
+            for item in data:
+                projects.append(item["title"])
+            print(projects)
+            if len(pro) == None:
+                User_object.deleted_at = timezone.now()
+                User_object.save()
+                my_object.deleted_at = timezone.now()
+                my_object.save()
+            # for p in pro:
+            #     p.supervisor = None
+            #     p.save()
+            else:
+                return Response(
+                {
+                "status": 400,
+                "message": f"Supervisor must be removed from projects {projects} before deletion",
+                "body": {},
+                "exception": None 
+                }
+            )
         except supervisor.DoesNotExist:
             return Response(
                         {
