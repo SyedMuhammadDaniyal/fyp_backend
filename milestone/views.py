@@ -331,7 +331,7 @@ class marksView(APIView):
 
     def get(self, request):
         try:
-            mk = Milestonemarks.objects.filter(project = request.data.get("project"), deleted_at=None)
+            mk = Milestonemarks.objects.filter(project = project.objects.get(id=request.data.get("project"), deleted_at=None, status="ongoing"), deleted_at=None)
             mil = milestone.objects.get(id = request.data.get("milestone"), deleted_at=None)
             current_date = datetime.now().date()
             milestone_date = mil.milestone_defending_date
