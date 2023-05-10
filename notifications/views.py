@@ -62,7 +62,7 @@ class allnotificationsAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
-            my_objects = notification.objects.filter(deleted_at=None)
+            my_objects = notification.objects.filter(deleted_at=None, department=request.user.department)
             serializer = notificationSerializer(my_objects, many=True)
             return Response({
                         "status": 200,
@@ -155,7 +155,6 @@ class updatenotificationAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
         try:
-            # print(request.data)
             sup = notification.objects.get(id=request.data.get("id"), deleted_at=None)
             serialize = notificationSerializer(sup,data=request.data)
             if serialize.is_valid():
