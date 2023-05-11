@@ -204,15 +204,15 @@ class SubmissionView(APIView):
             mil = milestone.objects.filter(project=project.objects.get(id=request.GET.get("pro_id"), deleted_at=None))
             milestone_work = MilestoneWork.objects.filter(milestone__in=mil, deleted_at=None)
             serialize = milestoneworkSerializer(milestone_work, many=True)
-            data = serialize.data
-            response = {}
-            for m in mil:
-                milestone_work_data = [d for d in data if d["milestone"] == m.id]
-                response[m.milestone_name] = milestone_work_data
+            # data = serialize.data
+            # response = {}
+            # for m in mil:
+                # milestone_work_data = [d for d in data if d["milestone"] == m.id]
+                # response[m.milestone_name] = milestone_work_data
             return Response({
                 "status": 200,
                 "message": "Success",
-                "body": response,
+                "body": serialize.data,#[response]
                 "exception": None
                 }
             )

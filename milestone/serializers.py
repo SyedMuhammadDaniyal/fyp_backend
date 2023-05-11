@@ -20,6 +20,7 @@ class milestoneworkSerializer(serializers.ModelSerializer):
     title = serializers.CharField(required=True)
     description = serializers.CharField(required=True)
     document = serializers.CharField(required=True)
+    milestone_title = serializers.PrimaryKeyRelatedField(read_only = True, source='milestone.milestone_name')
 
     class Meta:
         model = MilestoneWork
