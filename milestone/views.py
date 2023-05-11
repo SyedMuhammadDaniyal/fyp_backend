@@ -201,7 +201,7 @@ class SubmissionView(APIView):
 
     def get(self, request):
         try:
-            mil = milestone.objects.filter(project=project.objects.get(id=request.data.get("project_id"), deleted_at=None))
+            mil = milestone.objects.filter(project=project.objects.get(id=request.GET.get("pro_id"), deleted_at=None))
             milestone_work = MilestoneWork.objects.filter(milestone__in=mil, deleted_at=None)
             serialize = milestoneworkSerializer(milestone_work, many=True)
             data = serialize.data
