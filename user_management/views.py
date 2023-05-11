@@ -18,7 +18,6 @@ class CreateUserView(APIView):
     @transaction.atomic
     def post(self, request):
         try:
-            print(request.data)
             if request.data.get("role") == User.SUPERVISOR:
                 serialize = AddSupervisorSerializer(data=request.data)
                 if serialize.is_valid():
