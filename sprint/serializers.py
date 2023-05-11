@@ -21,8 +21,11 @@ class ticketSerializer(serializers.ModelSerializer):
     creator = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     assignee = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     sprint = serializers.PrimaryKeyRelatedField(queryset=Sprint.objects.all())    
+    status = serializers.CharField()
+    creator_name = serializers.PrimaryKeyRelatedField(read_only = True, source='creator.name')
+    assignee_name = serializers.PrimaryKeyRelatedField(read_only = True, source='assignee.name')
 
     class Meta:
         model = Ticket
-        fields = "__all__"
-        # fields = ['id', 'sprint', 'title', 'description', 'start_date', 'end_date', 'assignee', 'creator']
+        # fields = "__all__"
+        fields = ['id', 'sprint', 'title', 'description', 'start_date', 'end_date', 'assignee', 'creator', 'assignee_name', 'creator_name', 'status']

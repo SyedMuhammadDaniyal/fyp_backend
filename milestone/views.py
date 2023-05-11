@@ -201,12 +201,18 @@ class SubmissionView(APIView):
 
     def get(self, request):
         try:
-            milestone_work = MilestoneWork.objects.get(milestone=milestone.objects.get(id=request.data.get("milestone_id")), project=project.objects.get(id=request.data.get("project_id")), deleted_at=None)
-            serialize = milestoneworkSerializer(milestone_work)
+            mil = milestone.objects.filter(project=project.objects.get(id=request.data.get("project_id"), deleted_at=None))
+            milestone_work = MilestoneWork.objects.filter(milestone__in=mil, deleted_at=None)
+            serialize = milestoneworkSerializer(milestone_work, many=True)
+            data = serialize.data
+            response = {}
+            for m in mil:
+                milestone_work_data = [d for d in data if d["milestone"] == m.id]
+                response[m.milestone_name] = milestone_work_data
             return Response({
                 "status": 200,
                 "message": "Success",
-                "body": serialize.data,
+                "body": response,
                 "exception": None
                 }
             )

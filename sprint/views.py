@@ -213,8 +213,8 @@ class allticketAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
-            if request.data.get("sp_id") != None:
-                tickets = Ticket.objects.filter(sprint=request.data.get("sp_id"), deleted_at=None)
+            if request.GET.get("sp_id") != None:
+                tickets = Ticket.objects.filter(sprint=request.GET.get("sp_id"), deleted_at=None)
                 serialize = ticketSerializer(tickets, many=True)
                 return Response(       
                     {
@@ -226,13 +226,14 @@ class allticketAPI(APIView):
                     }
                 )
             else:
-                sp = Sprint.objects.filter(project=project.objects.get(id = request.data.get("pro_id")), deleted_at=None)
+                print(request.GET.get("pro_id"))
+                sp = Sprint.objects.filter(project=project.objects.get(id = request.GET.get("pro_id")), deleted_at=None)
                 tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
                 serialize = ticketSerializer(tc, many=True)
                 data = serialize.data
                 response = {"todo": [], "inprogress": [], "review":[], "completed":[]}
                 for item in data:
-                    ticket = {"ticket_id":item["id"],"ticket_name": item["title"], "start_date": item["start_date"], "end_date": item["end_date"], "creator": item["creator"], "assignee": item["assignee"], "sprint": item["sprint"], "created_at": item["created_at"], "updated_at": item["updated_at"], "deleted_at": item["deleted_at"], "description": item["description"]}
+                    ticket = {"ticket_id":item["id"],"ticket_name": item["title"], "start_date": item["start_date"], "end_date": item["end_date"], "creator": item["creator"], "assignee": item["assignee"], "sprint": item["sprint"], "description": item["description"], "status": item["status"], 'assignee_name':item['assignee_name'], 'creator_name':item['creator_name']}
                     if item["status"] == "todo":
                         response["todo"].append(ticket)
                     elif item["status"] == "inprogress":
