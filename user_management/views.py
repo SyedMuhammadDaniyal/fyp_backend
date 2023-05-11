@@ -171,15 +171,11 @@ class deletesupervisorAPI(APIView):
             projects = [] 
             for item in data:
                 projects.append(item["title"])
-            print(projects)
-            if len(pro) == None:
+            if len(pro) == 0:
                 User_object.deleted_at = timezone.now()
                 User_object.save()
                 my_object.deleted_at = timezone.now()
                 my_object.save()
-            # for p in pro:
-            #     p.supervisor = None
-            #     p.save()
             else:
                 return Response(
                 {
