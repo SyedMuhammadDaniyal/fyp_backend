@@ -260,7 +260,7 @@ class studentprojectwiseAPI(APIView):
     permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent | IsFYPPanel)]
     def get(self, request):
         try:
-            tm = teamMember.objects.filter(project=project.objects.get(id=request.data.get("pro_id")), deleted_at=None)
+            tm = teamMember.objects.filter(project=project.objects.get(id=request.GET.get("pro_id")), deleted_at=None)
             serialize = teamMemberSerializer(tm, many=True)
             return Response({
                 "status": 200,
