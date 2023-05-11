@@ -6,6 +6,7 @@ from notifications.serializers import notificationSerializer
 from core.models import notification, project, supervisor, User, teamMember
 from rest_framework.response import Response
 from django.utils import timezone
+from datetime import datetime
 # # Create your views here.
 
 class createnotificationAPI(APIView):
@@ -63,7 +64,8 @@ class allnotificationsAPI(APIView):
     def get(self, request):
         try:
             my_objects = notification.objects.filter(deleted_at=None, department=request.user.department)
-            serializer = notificationSerializer(my_objects, many=True)
+            sorted_objects = sorted(my_objects, key=lambda obj: datetime.combine(obj.createdate, obj.createtime), reverse=True)
+            serializer = notificationSerializer(sorted_objects, many=True)
             return Response({
                         "status": 200,
                         "message": "Success",

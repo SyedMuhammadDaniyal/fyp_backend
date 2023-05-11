@@ -15,6 +15,8 @@ from rest_framework.response import Response
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from .models import Milestonemarks
+from rest_framework.exceptions import ValidationError
+
 # # Create your views here.
 class createmilestoneAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
@@ -230,6 +232,16 @@ class MilestoneSubmissionView(APIView):
 
     def post(self, request):
         try:
+            uploaded_file = request.FILES.get('file')
+            extension = uploaded_file.name.split('.')[-1].lower()
+            if extension not in ['zip', 'rar']:
+                return Response({
+                    "status": 422,
+                    "message": "File must be a ZIP or RAR archive.",
+                    "body": {},
+                    "exception": None
+                    }
+                )
             m = milestone.objects.get(id=request.data.get('milestone_id'), deleted_at=None)
             t = m.milestone_name
             options = UploadFileRequestOptions(
