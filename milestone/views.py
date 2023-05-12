@@ -354,6 +354,52 @@ class givemarksView(APIView):
                 }
             )
 
+# class marksView(APIView):
+#     permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
+
+#     def get(self, request):
+#         try:
+#             project_id = request.GET.get("project_id")
+#             project_obj = project.objects.filter(id=project_id, deleted_at=None).first()
+#             if not project_obj:
+#                 return Response({
+#                     "status": 400,
+#                     "message": "Invalid project ID",
+#                     "body": {},
+#                     "exception": None
+#                 })
+
+#             milestone_marks = Milestonemarks.objects.filter(project=project_obj, deleted_at=None)
+#             milestone_marks_dict = {}
+#             for milestone_mark in milestone_marks:
+#                 if milestone_mark.milestone_id not in milestone_marks_dict:
+#                     milestone_marks_dict[milestone_mark.milestone_id] = []
+#                 milestone_marks_dict[milestone_mark.milestone_id].append(milestone_mark.marks)
+
+#             milestone_averages = []
+#             for milestone_id, marks_list in milestone_marks_dict.items():
+#                 milestone_obj = milestone.objects.filter(id=milestone_id, deleted_at=None).first()
+#                 if not marks_list:
+#                     milestone_averages.append({milestone_obj.milestone_name: None})
+#                 else:
+#                     milestone_averages.append({milestone_obj.milestone_name: sum(marks_list) / len(marks_list)})
+
+#             return Response({
+#                 "status": 200,
+#                 "message": "Success",
+#                 "Milestones Marks": milestone_averages,
+#                 "body": {},
+#                 "exception": None
+#             })
+
+#         except Exception as e:
+#             return Response({
+#                 "status": 404,
+#                 "message": "Some exception occurred",
+#                 "body": {},
+#                 "exception": str(e)
+#             })
+
 class marksView(APIView):
     permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
 
@@ -384,10 +430,12 @@ class marksView(APIView):
                 else:
                     milestone_averages.append({milestone_obj.milestone_name: sum(marks_list) / len(marks_list)})
 
+            milestone_marks_list = [{"title": list(d.keys())[0], "marks": list(d.values())[0]} for d in milestone_averages]
+
             return Response({
                 "status": 200,
                 "message": "Success",
-                "Milestones Marks": milestone_averages,
+                "data": milestone_marks_list,
                 "body": {},
                 "exception": None
             })
