@@ -270,7 +270,7 @@ class studentlistAPI(APIView):
     def get(self, request):
         try:
             department_obj = request.user.department
-            tm = teamMember.objects.filter(user__department=department_obj, deleted_at=None)
+            tm = teamMember.objects.filter(user__department=department_obj, deleted_at=None, project_id=None)
             serialize = updateStudentSerializer(tm, many=True)        
             return Response(
                 {

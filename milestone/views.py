@@ -302,37 +302,48 @@ class givemarksView(APIView):
     
     def post(self, request):
         try:
-            mk = Milestonemarks.objects.filter(project=request.data.get("project"),milestone=request.data.get("milestone"), m_distributor=request.data.get("m_distributor"), deleted_at=None)
-            if len(mk) > 0:
+            pro = project.objects.get(id=request.data.get("project"), deleted_at=None)
+            if pro.status == "completed":
                 return Response(
                     {
                     "status": 200,
-                    "message": "This form is allowed once submission",
+                    "message": "Project is completed You cannot mark it",
                     "body": {},
                     "exception": None
                     }
                 )
             else:
-                serialize = milestonemarkSerializer(data=request.data)
-                if serialize.is_valid():
-                    serialize.save()
+                mk = Milestonemarks.objects.filter(project=request.data.get("project"),milestone=request.data.get("milestone"), m_distributor=request.data.get("m_distributor"), deleted_at=None)
+                if len(mk) > 0:
                     return Response(
                         {
                         "status": 200,
-                        "message": "Success",
+                        "message": "This form is allowed once submission",
                         "body": {},
                         "exception": None
                         }
                     )
                 else:
-                    return Response(
-                        {
-                        "status": 422,
-                        "message": serialize.errors,
-                        "body": {},
-                        "exception": "some exception"
-                        }
-                    )
+                    serialize = milestonemarkSerializer(data=request.data)
+                    if serialize.is_valid():
+                        serialize.save()
+                        return Response(
+                            {
+                            "status": 200,
+                            "message": "Success",
+                            "body": {},
+                            "exception": None
+                            }
+                        )
+                    else:
+                        return Response(
+                            {
+                            "status": 422,
+                            "message": serialize.errors,
+                            "body": {},
+                            "exception": "some exception"
+                            }
+                        )
         except Exception as e:
           return Response(       
                 {
@@ -348,50 +359,43 @@ class marksView(APIView):
 
     def get(self, request):
         try:
-            mk = Milestonemarks.objects.filter(project = project.objects.get(id=request.data.get("project"), deleted_at=None, status="ongoing"), deleted_at=None)
-            mil = milestone.objects.get(id = request.data.get("milestone"), deleted_at=None)
-            current_date = datetime.now().date()
-            milestone_date = mil.milestone_defending_date
-            date_difference = current_date - milestone_date
-            if date_difference.days == 0 or date_difference.days < 0:
-                return Response(
-                    {
-                    "status": 200,
-                    "message": "Marks are updated after "+str(milestone_date)+" date",
+            project_id = request.GET.get("project_id")
+            project_obj = project.objects.filter(id=project_id, deleted_at=None).first()
+            if not project_obj:
+                return Response({
+                    "status": 400,
+                    "message": "Invalid project ID",
                     "body": {},
                     "exception": None
-                    }
-                )
-            else:
-                mark = []
-                for m in mk:
-                    mark.append(m.marks)
-                if len(mark) == 0:
-                    return Response(       
-                        {
-                        "status": 400,
-                        "message": "Doest not have Marks Rightnow",
-                        "body": {},
-                        "exception": "zero division" 
-                        }
-                    )
+                })
+
+            milestone_marks = Milestonemarks.objects.filter(project=project_obj, deleted_at=None)
+            milestone_marks_dict = {}
+            for milestone_mark in milestone_marks:
+                if milestone_mark.milestone_id not in milestone_marks_dict:
+                    milestone_marks_dict[milestone_mark.milestone_id] = []
+                milestone_marks_dict[milestone_mark.milestone_id].append(milestone_mark.marks)
+
+            milestone_averages = []
+            for milestone_id, marks_list in milestone_marks_dict.items():
+                milestone_obj = milestone.objects.filter(id=milestone_id, deleted_at=None).first()
+                if not marks_list:
+                    milestone_averages.append({milestone_obj.milestone_name: None})
                 else:
-                    average = sum(mark)/len(mark)
-                    return Response(
-                        {
-                        "status": 200,
-                        "message": "Success",
-                        "Milestone Marks": average,
-                        "body": {},
-                        "exception": None
-                        }
-                    )
-        except Exception as e:
-            return Response(       
-                {
-                "status": 404,
-                "message": "some exception",
+                    milestone_averages.append({milestone_obj.milestone_name: sum(marks_list) / len(marks_list)})
+
+            return Response({
+                "status": 200,
+                "message": "Success",
+                "Milestones Marks": milestone_averages,
                 "body": {},
-                "exception": str(e) 
-                }
-            )
+                "exception": None
+            })
+
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "Some exception occurred",
+                "body": {},
+                "exception": str(e)
+            })
