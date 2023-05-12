@@ -15,6 +15,16 @@ class milestoneSerializer(serializers.ModelSerializer):
         model = milestone
         fields = ['id','milestone_name', 'document_submission_date', 'milestone_defending_date', 'milestone_details', 'rubrics', 'marks']
 
+    def validate_milestone_name(self, value):
+        if value.isnumeric():
+            raise serializers.ValidationError("The value should not contain only numbers.")
+        return value
+    
+    def validate_milestone_details(self, value):
+        if value.isnumeric():
+            raise serializers.ValidationError("The value should not contain only numbers.")
+        return value
+
 
 class milestoneworkSerializer(serializers.ModelSerializer):
     title = serializers.CharField(required=True)
