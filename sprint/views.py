@@ -226,7 +226,6 @@ class allticketAPI(APIView):
                     }
                 )
             else:
-                print(request.GET.get("pro_id"))
                 sp = Sprint.objects.filter(project=project.objects.get(id = request.GET.get("pro_id")), deleted_at=None)
                 tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
                 serialize = ticketSerializer(tc, many=True)
