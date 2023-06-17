@@ -12,3 +12,7 @@ class IsSupervisor(BasePermission):
 class IsFYPPanel(BasePermission):
     def has_permission(self, request, view):
         return request.user.role == 'fyp_panel'
+
+class IsSuperAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'super_admin'

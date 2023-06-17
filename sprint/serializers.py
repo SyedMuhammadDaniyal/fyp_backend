@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Sprint, Ticket
+from .models import Sprint, Ticket, TicketLog
 from core.models import project, milestone, User
 
 class sprintSerializer(serializers.ModelSerializer):
@@ -29,3 +29,42 @@ class ticketSerializer(serializers.ModelSerializer):
         model = Ticket
         # fields = "__all__"
         fields = ['id', 'sprint', 'title', 'description', 'start_date', 'end_date', 'assignee', 'creator', 'assignee_name', 'creator_name', 'status']
+
+
+    def create(self, validated_data):
+        ticket = super().create(validated_data)
+
+        # Create log entry for ticket creation
+        TicketLog.objects.create(
+            ticket=ticket,
+            to_status=ticket.status,
+            from_status=ticket.status,
+            mover=ticket.creator
+        )
+
+        return ticket
+
+    def update(self, instance, validated_data):
+        ticket = super().update(instance, validated_data)
+
+        # Create log entry for ticket update
+        from_status = Ticket.objects.get(id=instance.id).status
+        TicketLog.objects.create(
+            ticket=ticket,
+            to_status=ticket.status,
+            from_status=from_status,
+            mover=ticket.creator
+        )
+
+        return ticket
+
+    def destroy(self, instance):
+        # Create log entry for ticket deletion
+        TicketLog.objects.create(
+            ticket=instance,
+            to_status=None,
+            from_status=instance.status,
+            mover=instance.creator
+        )
+
+        instance.delete()
