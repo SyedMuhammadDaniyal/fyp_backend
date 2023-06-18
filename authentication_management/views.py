@@ -28,12 +28,10 @@ class RegisterUserAPIView(APIView):
             serialize = RegisterSerializer(data=request.data) 
             if serialize.is_valid():
                 serialize.save()
-
-                subject = 'Registration'
-                message = f'Your OTP is: \nPlease do not provide this OTP with Anyone.\nIt is a system-generated message. Please do not reply to this email.'
+                subject = 'PMO Registration'
                 email_from = request.user
-                recipient_list = [email]
-
+                message = f"You are registered in PMBOTICS By {request.user.uni.name}. You are welcome into the system PMBOTICS By {request.user.uni.name}. Please find your login credentials:\nEmail: {request.data.get('email')}\nPassword: {request.data.get('password')}\nDue to system security, please do not provide your credentials to anyone.\nAdmin Name: {request.user.name}\nEmail Id: {email_from}"
+                recipient_list = [request.data.get('email'), email_from]
                 try:
                     send_mail(subject, message, email_from, recipient_list)
                 except exceptions.GoogleAuthError:
@@ -73,43 +71,43 @@ class LoginUserApi(APIView):
         if serialize.is_valid():
             try:
                 user = User.objects.get(**serialize.validated_data, deleted_at=None)
-                if user.role == "fyp_panel":
-                    fyp_panel = fyppanel.objects.get(user=user, deleted_at=None)
-                    if fyp_panel.var == "unverified" or fyp_panel.var is None:
-                        return Response({
-                            "data": None,
-                            "message": "Your Status is Unverified. Please contact your Admin.",
-                            "status": "Success"
-                        })
+                # if user.role == "fyp_panel":
+                #     fyp_panel = fyppanel.objects.get(user=user, deleted_at=None)
+                #     if fyp_panel.var == "unverified" or fyp_panel.var is None:
+                #         return Response({
+                #             "data": None,
+                #             "message": "Your Status is Unverified. Please contact your Admin.",
+                #             "status": "Success"
+                #         })
 
-                force_upper_condition = True
-                if force_upper_condition:
-                    email = request.data.get('email')
+                # force_upper_condition = True
+                # if force_upper_condition:
+                email = request.data.get('email')
 
-                    # Generate an OTP
-                    otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+                # Generate an OTP
+                otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
 
-                    # Save the OTP in the user's session or database for verification later
-                    user.otp = otp
-                    user.is_active = True
-                    user.save()
+                # Save the OTP in the user's session or database for verification later
+                user.otp = otp
+                user.is_active = True
+                user.save()
 
-                    # Send the OTP to the user's email
-                    subject = 'Registration OTP'
-                    message = f'Your OTP is: {otp} \nPlease do not provide this OTP with Anyone.\nIt is a system-generated message. Please do not reply to this email.'
-                    email_from = settings.EMAIL_HOST_USER
-                    recipient_list = [email]
+                # Send the OTP to the user's email
+                subject = 'Registration OTP'
+                message = f'Your OTP is: {otp} \nPlease do not provide this OTP with Anyone.\nIt is a system-generated message. Please do not reply to this email.'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [email]
 
-                    try:
-                        send_mail(subject, message, email_from, recipient_list)
-                    except exceptions.GoogleAuthError:
-                        return Response({'error': 'Failed to send email.'}, status=500)
+                try:
+                    send_mail(subject, message, email_from, recipient_list)
+                except exceptions.GoogleAuthError:
+                    return Response({'error': 'Failed to send email.'}, status=500)
 
-                    return Response({
-                        "data":[],
-                        "message": "OTP successfully sent to your registered email.",
-                        "status": 200
-                    })
+                return Response({
+                    "data":[],
+                    "message": "OTP successfully sent to your registered email.",
+                    "status": 200
+                })
             except:
                 return Response({
                     "data": None,
@@ -144,7 +142,8 @@ class Validate_otpAPI(APIView):
                         "name": user.name,
                         "role": user.role,
                         "dep_id": user.department.id,
-                        "University_id":user.uni,
+                        "University_id":user.uni.id,
+                        "University_name":user.uni.name,
                     },
                     "message": "OTP validation successful. Access token generated.",
                     "status": 200
