@@ -29,3 +29,10 @@ class Ticket(BaseModel):
     status = models.CharField(choices=kanban_status, max_length=30, default=TODO)
     creator = models.ForeignKey("core.User", on_delete=models.RESTRICT, related_name='creator')
     assignee = models.ForeignKey("core.User", on_delete=models.RESTRICT, related_name='assignee')
+
+class TicketLog(BaseModel):
+    ticket = models.ForeignKey(Ticket, on_delete=models.RESTRICT, related_name='ticket')
+    github_link = models.CharField(max_length=255)
+    to_status = models.CharField(max_length=30)
+    from_status = models.CharField(max_length=30)
+    mover = models.ForeignKey("core.User", on_delete=models.RESTRICT)

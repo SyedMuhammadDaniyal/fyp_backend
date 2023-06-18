@@ -1,3 +1,5 @@
+import csv
+from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -5,7 +7,7 @@ from rest_framework.views import APIView
 from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from core.models import User, project, supervisor, teamMember
 
-from .models import Sprint, Ticket
+from .models import Sprint, Ticket, TicketLog
 from .serializers import sprintSerializer, ticketSerializer
 
 # Create your views here.
@@ -371,6 +373,35 @@ class getspecificticketAPI(APIView):
                 {
                 "status": 404,
                 "message": serialize.errors,
+                "body": {},
+                "exception": str(e) 
+                }
+            )
+
+class ticketlogAPI(APIView):
+    def get(self, request):
+        try:
+            pro = project.objects.get(id=request.GET.get('id'))
+            sp = Sprint.objects.filter(project=pro, deleted_at=None)
+            ticket = Ticket.objects.filter(sprint=sp, deleted_at=None)
+            ticket_log = TicketLog.objects.filter(ticket=ticket,deleted_at=None)
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="ticket_log.csv"'
+
+            # Write data to the CSV file
+            writer = csv.writer(response)
+            writer.writerow(['id','Ticket', 'To Status', 'From Status', 'Mover'])  # Write header row
+            id = 0
+            for log in ticket_log:
+                id += 1 
+                writer.writerow([id, log.ticket.title, log.to_status, log.from_status, log.mover])  # Write data rows
+
+            return response        
+        except Exception as e:
+            return Response(       
+                {
+                "status": 404,
+                "message": "some errors",
                 "body": {},
                 "exception": str(e) 
                 }
