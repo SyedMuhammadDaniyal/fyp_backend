@@ -63,7 +63,9 @@ class LoginUserApi(APIView):
         
         # Generate an OTP
         otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-
+        print(1)
+        print(1)
+        print(1)
         # Save the OTP in the user's session or database for verification later
 
         # Send the OTP to the user's email
