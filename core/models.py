@@ -41,10 +41,17 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
         return self.create_user(email, password, **extra_fields)
 
-class department(BaseModel):
+class University(BaseModel):
     name = models.CharField(max_length=45, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class department(BaseModel):
+    name = models.CharField(max_length=45)
     hod = models.CharField(max_length=45)
-    
+    uni = models.ForeignKey(University, on_delete=models.RESTRICT, related_name='University')
+
     def __str__(self):
         return self.name
 
@@ -52,10 +59,12 @@ class User(AbstractUser, BaseModel):
     SUPERVISOR = "supervisor"
     STUDENT = "student"
     PMO = "fyp_panel"
+    SUPER = "super_admin"
     USER_ROLES = (
         (SUPERVISOR, SUPERVISOR),
         (STUDENT, STUDENT),
-        (PMO, PMO)  
+        (PMO, PMO),
+        (SUPER, SUPER)
     )
 
     username = None
@@ -64,8 +73,9 @@ class User(AbstractUser, BaseModel):
     name = models.CharField(max_length=30)
     phoneno = models.CharField(max_length=50)
     department = models.ForeignKey(department, on_delete=models.RESTRICT, related_name='department')
+    uni = models.ForeignKey(University, on_delete=models.RESTRICT)
     role = models.CharField(choices=USER_ROLES, max_length=20, null=True)
-    otp = models.CharField(max_length=20, null=True)
+    otp = models.CharField(max_length=20, null=True, blank=True)
 
     objects = CustomUserManager()
     # username field

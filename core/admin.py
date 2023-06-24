@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import supervisor, department, project, milestone, fyppanel, User, notification, teamMember
+from core.models import supervisor, department, project, milestone, fyppanel, User, notification, teamMember, University
 from sprint.models import Sprint
 
 # Register your models here.
@@ -12,3 +12,4 @@ admin.site.register(User)
 admin.site.register(notification)
 admin.site.register(teamMember)
 admin.site.register(Sprint)
+admin.site.register(University)

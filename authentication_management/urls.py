@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterUserAPIView, LoginUserApi
+from .views import RegisterUserAPIView, LoginUserApi, Validate_otpAPI
 from project.views import projectAPIView, projectlistAPI, updateprojectAPI, deleteprojectAPI, addteammemberAPI, allprojectAPI, changesupervisorAPI, studentprojectwiseAPI
 from milestone.views import createmilestoneAPI, allmilestoneAPI, updatemilestoneAPI, deletemilestoneAPI, GetAllMilestones, SubmissionView, MilestoneSubmissionView, marksView, givemarksView
 from supervisor.views import supervisorView
@@ -7,7 +7,7 @@ from department.views import departmentAPI
 from notifications.views import createnotificationAPI, allnotificationsAPI, getallnotificationsAPI, deletenotificationAPI, updatenotificationAPI
 from teamMember.views import RegisterteamMemberAPIView
 from user_management.views import CreateUserView, allusersAPI, updatesupervisorAPI, studentlistAPI, deletesupervisorAPI, updatestudentAPI, deletestudentAPI
-from sprint.views import createsprintAPI, updatesprintAPI, deletesprintAPI, getspecificsprintAPI, allsprintAPI, createticketAPI, allticketAPI, deleteticketAPI, updateticketAPI, getspecificticketAPI
+from sprint.views import createsprintAPI, updatesprintAPI, deletesprintAPI, getspecificsprintAPI, allsprintAPI, createticketAPI, allticketAPI, deleteticketAPI, updateticketAPI, getspecificticketAPI, ticketlogAPI
 
 
 urlpatterns = [
@@ -49,8 +49,10 @@ urlpatterns = [
   path("deleteticket/<int:pk>",deleteticketAPI.as_view()),
   path("updateticket", updateticketAPI.as_view()),
   path('getspecificticket', getspecificticketAPI.as_view()),
+  path('ticketlog', ticketlogAPI.as_view()),
   path("work", SubmissionView.as_view()),
   path("submitwork", MilestoneSubmissionView.as_view()),
   path("marks", marksView.as_view()),
   path('givemarks', givemarksView.as_view()),
+  path('valotp', Validate_otpAPI.as_view()),
 ]

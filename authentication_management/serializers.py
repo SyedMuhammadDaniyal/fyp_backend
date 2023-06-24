@@ -1,4 +1,4 @@
-from core.models import User, fyppanel, department
+from core.models import User, fyppanel, department, University
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 import re
@@ -11,6 +11,7 @@ class RegisterSerializer(serializers.Serializer):
   designation = serializers.CharField(required=True)
   phoneno = serializers.CharField(required=True, source='user.phoneno')
   department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
+  uni = serializers.PrimaryKeyRelatedField(queryset=University.objects.all(), source='user.uni')
   
   def validate_name(self, value):
     if any(char.isdigit() for char in value):
@@ -38,6 +39,7 @@ class RegisterSerializer(serializers.Serializer):
       password=validated_data['password'],
       phoneno=validated_data['user']['phoneno'],
       department=validated_data['user']['department'],
+      uni=validated_data['user']['uni'],
       is_active = False,
       role=User.PMO
     )

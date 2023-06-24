@@ -53,6 +53,8 @@ REST_FRAMEWORK = {
     )
 }
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -162,3 +164,5 @@ EMAIL_HOST_USER = 'pmboticss@gmail.com'  # Replace with your Gmail email
 EMAIL_HOST_PASSWORD = 'racvggqxmsajslwd'  # Replace with your Gmail password
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
