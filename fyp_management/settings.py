@@ -1,4 +1,6 @@
 
+from imagekitio import ImageKit
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -14,7 +16,8 @@ SECRET_KEY = 'django-insecure-=r^8jwame2(n*_f0p@wva-qvh+23@lo^uaoi(gy05b-3vk+lly
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["pmbotics.herokuapp.com"]
+ALLOWED_HOSTS = ['pmbotics.herokuapp.com', '127.0.0.1']
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
@@ -37,17 +40,20 @@ INSTALLED_APPS = [
     'notifications',
     'corsheaders',
     'teamMember',
-    "user_management"
+    "user_management",
+    "sprint",
 ]
 
 
 AUTH_USER_MODEL ='core.User'
 
-# REST_FRAMEWORK = {
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     # 'utils.renderer.CustomRenderer',
-    # ]
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -134,3 +140,29 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SDK initialization
+
+# SDK initialization
+
+imagekit = ImageKit(
+    private_key='private_Jd9VZka5/bXGay4PT+ax18QObaM=',
+    public_key='public_jRJ6vDMoNvBcsC7VPMaf8IZTmaU=',
+    url_endpoint='https://ik.imagekit.io/htnsr3l8u'
+)
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'pmboticss@gmail.com'  # Replace with your Gmail email
+EMAIL_HOST_PASSWORD = 'racvggqxmsajslwd'  # Replace with your Gmail password
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -54,11 +54,32 @@ create notifications
 "description":"Hai lekin abhi nhi pata"
 }
 
-teamMemberRegister
-{
-    "email": "usali@students.uit.edu",
+teamMember creation api
+{   
+    "role":"student",
+    "email": "new@students.uit.edu",
     "password": "usama@321",
-    "name": "Usama Ali",
-    "rollno": "19b-047-cs",
-    "grade": "0"
+    "name": "Ali",
+    "rollno": "19b-01111-cs",
+    "seatno":"ct-123456",
+    "enrollmentno":"UITU/4685/2019",
+    "phoneno":"03134744647",
+    "department":1
 }
+
+supervisor creation api
+{
+    "role":"supervisor",
+    "email": "supervisor4@sup.uit.edu",
+    "password": "usama@321",
+    "name": "Miss Marvi",
+    "faculty_no":"12525",
+    "field_of_interest":"Web development",
+    "phone_no":"03121254551",
+    "department":3
+}
+
+#final project code
+            pro = project.objects.get(id=request.data.get("project"), deleted_at=None)
+            pro.grade += average
+            pro.save()

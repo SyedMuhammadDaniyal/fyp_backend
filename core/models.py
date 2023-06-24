@@ -8,6 +8,7 @@ from django.contrib.auth.base_user import BaseUserManager
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from datetime import datetime
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     """
@@ -40,17 +41,41 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
         return self.create_user(email, password, **extra_fields)
 
+class University(BaseModel):
+    name = models.CharField(max_length=45, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class department(BaseModel):
+    name = models.CharField(max_length=45)
+    hod = models.CharField(max_length=45)
+    uni = models.ForeignKey(University, on_delete=models.RESTRICT, related_name='University')
+
+    def __str__(self):
+        return self.name
 
 class User(AbstractUser, BaseModel):
     SUPERVISOR = "supervisor"
     STUDENT = "student"
     PMO = "fyp_panel"
-    
+    SUPER = "super_admin"
+    USER_ROLES = (
+        (SUPERVISOR, SUPERVISOR),
+        (STUDENT, STUDENT),
+        (PMO, PMO),
+        (SUPER, SUPER)
+    )
+
     username = None
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=30)
-
+    phoneno = models.CharField(max_length=50)
+    department = models.ForeignKey(department, on_delete=models.RESTRICT, related_name='department')
+    uni = models.ForeignKey(University, on_delete=models.RESTRICT)
+    role = models.CharField(choices=USER_ROLES, max_length=20, null=True)
+    otp = models.CharField(max_length=20, null=True, blank=True)
 
     objects = CustomUserManager()
     # username field
@@ -58,66 +83,66 @@ class User(AbstractUser, BaseModel):
     REQUIRED_FIELDS = []
 
 class fyppanel(BaseModel):
+    VARIFIED = "varified"
+    UNVARIFIED = "unvarified"
+    varify = (
+        (VARIFIED, VARIFIED),
+        (UNVARIFIED, UNVARIFIED)
+    )
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
     facultyid = models.CharField(max_length=45, unique=True)       
     designation = models.CharField(max_length=45)
-
-class department(BaseModel):
-    name = models.CharField(max_length=45, unique=True)
-    hod = models.CharField(max_length=45)
+    var = models.CharField(choices=varify, max_length=20, null=True)
     
-    def __str__(self):
-        return self.name
-    
-
 class supervisor(BaseModel):
-    user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
-    name = models.CharField(max_length=45)
+    user = models.OneToOneField("core.User", on_delete=models.RESTRICT, related_name='user')
     faculty_no = models.CharField(max_length=45, unique=True)
-    phone_no = models.CharField(max_length=12)
     field_of_interest = models.CharField(max_length=45)
-    department = models.ForeignKey(department, on_delete=models.RESTRICT, default=False)
-
-    def __str__(self):
-        return self.name
-
-
-class project(BaseModel):
-    title = models.CharField(max_length=100, unique=True)
-    batch = models.CharField(max_length=50)
-    grade = models.IntegerField(default=0)
-    description = models.TextField()
-    status = models.CharField(max_length=45,default="initial")
-    domain = models.CharField(max_length=45)
-    no_of_group_members = models.IntegerField(default=5)
-    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT)
-    department = models.ForeignKey(department, on_delete=models.RESTRICT)
-     
+    designation = models.CharField(max_length=45, default=False)
+    
 
 class milestone(BaseModel):
     milestone_name = models.CharField(max_length=75,unique=True)
-    document_submissin_date = models.DateField()
+    document_submission_date = models.DateField()
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
-    fyp_panel = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
-    # project = models.ForeignKey(project, on_delete=models.RESTRICT)
-
+    rubrics = models.JSONField()
+    marks = models.FloatField(default=50.0)
 
 class notification(BaseModel):
     title = models.CharField(max_length=75)
     isactive = models.BooleanField(default=False)
     description = models.CharField(max_length=500)
-    createdby = models.ForeignKey(fyppanel, on_delete=models.RESTRICT)
+    createdby = models.ForeignKey(User, on_delete=models.RESTRICT)
+    department = models.ForeignKey(department, on_delete=models.RESTRICT)
     createdate = models.DateField()
     createtime = models.TimeField()
 
 
-class teamMember(BaseModel):
-    user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
-    rollno = models.CharField(max_length=50)
-    grade = models.IntegerField(default=0,
+class project(BaseModel):
+    title = models.CharField(max_length=100, unique=True)
+    year =  models.CharField(max_length=50, default=False)
+    batch = models.CharField(max_length=50)
+    no_of_group_members = models.IntegerField(default=3,
             validators=[
-            MaxValueValidator(200),
-            MinValueValidator(0)
+            MaxValueValidator(5),
+            MinValueValidator(1)
         ]
     )
+    description = models.TextField()
+    status = models.CharField(max_length=45,default="ongoing")
+    domain = models.CharField(max_length=45)
+    grade = models.FloatField(default=0)
+    supervisor = models.ForeignKey(supervisor, on_delete=models.RESTRICT, null=True, blank=True, related_name="projects")
+    department = models.ForeignKey(department, on_delete=models.RESTRICT)
+    milestone = models.ManyToManyField(milestone)
+    notification = models.ManyToManyField(notification)
+
+
+class teamMember(BaseModel):
+    user = models.OneToOneField("core.User", on_delete=models.RESTRICT)
+    rollno = models.CharField(max_length=50, unique=True)
+    grade = models.FloatField(default=0)
+    seatno = models.CharField(max_length=50, unique=True)
+    enrollmentno = models.CharField(max_length=50, unique=True)
+    project = models.ForeignKey(project, null=True, on_delete=models.RESTRICT)
