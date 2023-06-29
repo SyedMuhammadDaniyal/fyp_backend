@@ -72,7 +72,7 @@ class User(AbstractUser, BaseModel):
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=30)
     phoneno = models.CharField(max_length=50)
-    department = models.ForeignKey(department, on_delete=models.RESTRICT, related_name='department')
+    department = models.ForeignKey(department, on_delete=models.RESTRICT, related_name='department') #, default=1
     uni = models.ForeignKey(University, on_delete=models.RESTRICT)
     role = models.CharField(choices=USER_ROLES, max_length=20, null=True)
     otp = models.CharField(max_length=20, null=True, blank=True)
