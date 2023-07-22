@@ -55,6 +55,6 @@ class LoginSerializer(serializers.Serializer):
   email = serializers.EmailField(required=True)
   password = serializers.CharField(required=True)
   
-  class Meta:
-    model = User
-    fields = "__all__"
+  # class Meta:
+  #   model = User
+  #   fields = "__all__"

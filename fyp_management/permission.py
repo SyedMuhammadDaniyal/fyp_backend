@@ -15,4 +15,4 @@ class IsFYPPanel(BasePermission):
 
 class IsSuperAdmin(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == 'super_admin'
+        return request.user.role == 'admin'

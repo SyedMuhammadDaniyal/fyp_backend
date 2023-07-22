@@ -71,17 +71,6 @@ class LoginUserApi(APIView):
         if serialize.is_valid():
             try:
                 user = User.objects.get(**serialize.validated_data, deleted_at=None)
-                # if user.role == "fyp_panel":
-                #     fyp_panel = fyppanel.objects.get(user=user, deleted_at=None)
-                #     if fyp_panel.var == "unverified" or fyp_panel.var is None:
-                #         return Response({
-                #             "data": None,
-                #             "message": "Your Status is Unverified. Please contact your Admin.",
-                #             "status": "Success"
-                #         })
-
-                # force_upper_condition = True
-                # if force_upper_condition:
                 email = request.data.get('email')
 
                 # Generate an OTP
@@ -93,7 +82,7 @@ class LoginUserApi(APIView):
                 user.save()
 
                 # Send the OTP to the user's email
-                subject = 'Registration OTP'
+                subject = 'Login OTP'
                 message = f'Your OTP is: {otp} \nPlease do not provide this OTP with Anyone.\nIt is a system-generated message. Please do not reply to this email.'
                 email_from = settings.EMAIL_HOST_USER
                 recipient_list = [email]
@@ -102,7 +91,7 @@ class LoginUserApi(APIView):
                     send_mail(subject, message, email_from, recipient_list)
                 except exceptions.GoogleAuthError:
                     return Response({'error': 'Failed to send email.'}, status=500)
-
+        
                 return Response({
                     "data":[],
                     "message": "OTP successfully sent to your registered email.",
@@ -114,11 +103,12 @@ class LoginUserApi(APIView):
                     "message": LoginMessages.WRONG_CREDENTIALS.value,
                     "status": 422
                 })
-        return Response({
-            "data": serialize.errors,
-            "message": None,
-            "status": 422
-        })
+        else:
+            return Response({
+                "data": serialize.errors,
+                "message": None,
+                "status": 422
+            })
 
 class Validate_otpAPI(APIView):
     def patch(self, request):
@@ -164,3 +154,4 @@ class Validate_otpAPI(APIView):
                 "exception": str(e) 
                 }
             )
+    
