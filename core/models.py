@@ -59,7 +59,7 @@ class User(AbstractUser, BaseModel):
     SUPERVISOR = "supervisor"
     STUDENT = "student"
     PMO = "fyp_panel"
-    SUPER = "super_admin"
+    SUPER = "admin"
     USER_ROLES = (
         (SUPERVISOR, SUPERVISOR),
         (STUDENT, STUDENT),
