@@ -50,7 +50,7 @@ class University(BaseModel):
 class department(BaseModel):
     name = models.CharField(max_length=45)
     hod = models.CharField(max_length=45)
-    uni = models.ForeignKey(University, on_delete=models.RESTRICT, related_name='University')
+    uni = models.ForeignKey(University, on_delete=models.RESTRICT) #, related_name='University'
 
     def __str__(self):
         return self.name

@@ -1,5 +1,7 @@
 from rest_framework.response import Response
-from core.models import department
+from rest_framework.permissions import IsAuthenticated
+from fyp_management.permission import IsSuperAdmin
+from core.models import department, University
 from .serializers import departmentSerializer
 from rest_framework.views import APIView
 from django.utils import timezone
@@ -7,11 +9,12 @@ from fyp_management.permission import IsFYPPanel
 # Create your views here.
 
 class departmentAPI(APIView):
+    permission_classes = [IsAuthenticated & IsSuperAdmin]
 
     def get(self, request):
         try:
-            sup = department.objects.filter(deleted_at=None)
-            serialize = departmentSerializer(sup, many=True)   
+            sup = department.objects.filter(uni__id = request.GET.get("uni_id"), deleted_at=None)
+            serialize = departmentSerializer(sup, many=True)
             return Response(
                 {
                 "data":serialize.data,
