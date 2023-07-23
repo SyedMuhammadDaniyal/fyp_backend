@@ -9,7 +9,7 @@ from authentication_management.utils.contant import LoginMessages
 from core.models import User, fyppanel
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
-from fyp_management.permission import IsSuperAdmin
+from fyp_management.permission import IsFYPPanel
 from rest_framework.decorators import api_view 
 from django.db import transaction
 from django.core.mail import send_mail
@@ -20,7 +20,7 @@ import random
 
 
 class RegisterUserAPIView(APIView):
-    permission_classes = [IsAuthenticated & IsSuperAdmin]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
 
     @transaction.atomic  
     def post(self, request):
@@ -53,7 +53,6 @@ class RegisterUserAPIView(APIView):
                     "exception": "some exception" 
                     }
                 )
-
         except Exception as e:
             return Response(
                 {
