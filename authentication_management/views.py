@@ -111,7 +111,7 @@ class LoginUserApi(APIView):
             })
 
 class Validate_otpAPI(APIView):
-    def patch(self, request):
+    def post(self, request):
         try:
             email = request.data.get('email')
             otp = request.data.get('otp')
