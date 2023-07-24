@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from core.models import supervisor, User, teamMember, department
+from core.models import supervisor, User, teamMember, department, University
 from django.utils import timezone
 
 class AddSupervisorSerializer(serializers.ModelSerializer):
@@ -9,13 +9,14 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='user.name', required=True)
     phoneno = serializers.CharField(source='user.phoneno', required=True)
     department = serializers.PrimaryKeyRelatedField(queryset=department.objects.all(), source='user.department')
+    uni = serializers.PrimaryKeyRelatedField(queryset=University.objects.all(), source='user.uni')
     faculty_no = serializers.CharField(required=True)
     designation = serializers.CharField(required=True)
     field_of_interest = serializers.CharField(required=True)
     
     class Meta:
         model = supervisor
-        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department', 'designation']
+        fields = ['id','email', 'password', 'name','faculty_no', 'field_of_interest', 'phoneno', 'department', 'designation', 'uni']
     
     
     def create(self, validated_data):
@@ -24,6 +25,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         name=validated_data['user']['name'],
         password=validated_data['password'],
         department = validated_data['user']['department'],
+        uni = validated_data['user']['uni'],
         phoneno = validated_data['user']['phoneno'],
         is_active = False,
         role=User.SUPERVISOR

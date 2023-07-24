@@ -106,6 +106,7 @@ class milestone(BaseModel):
     document_submission_date = models.DateField()
     milestone_defending_date = models.DateField()
     milestone_details = models.CharField(max_length=500)
+    department = models.ForeignKey(department, on_delete=models.RESTRICT)
     rubrics = models.JSONField()
     marks = models.FloatField(default=50.0)
 

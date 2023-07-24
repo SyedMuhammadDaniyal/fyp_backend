@@ -25,7 +25,7 @@ class createmilestoneAPI(APIView):
             serialize = milestoneSerializer(data=request.data)
             if serialize.is_valid():
                 milestone_obj = serialize.save()
-                projects = project.objects.filter(status="ongoing", deleted_at=None)
+                projects = project.objects.filter(status="ongoing", deleted_at=None, department=request.user.department)
                 for p in projects:
                     p.milestone.add(milestone_obj)
                 return Response(
@@ -59,7 +59,7 @@ class allmilestoneAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
-            mil = milestone.objects.filter(deleted_at=None)
+            mil = milestone.objects.filter(department=request.user.department, deleted_at=None)
             serialize = milestoneSerializer(mil, many=True) #, many=True   
             return Response(
                     {

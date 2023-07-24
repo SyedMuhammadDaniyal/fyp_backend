@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from core.models import teamMember, User, department
+from core.models import teamMember, User, department, University
 
 class teamMemberSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
@@ -11,11 +11,12 @@ class teamMemberSerializer(serializers.ModelSerializer):
     rollno = serializers.CharField(required=True)
     seatno = serializers.CharField(required=True)
     enrollmentno = serializers.CharField(required=True)
+    uni = serializers.PrimaryKeyRelatedField(queryset=University.objects.all(), source='user.uni')
     u_id = serializers.PrimaryKeyRelatedField(read_only = True, source='user.id')
 
     class Meta:
         model = teamMember
-        fields = ['id','email','password','name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department', 'u_id']
+        fields = ['id','email','password','name','rollno', 'seatno', 'enrollmentno', 'phoneno', 'department', 'u_id', 'uni']
     
     def create(self, validated_data):
         tm = User.objects.create(
@@ -24,6 +25,7 @@ class teamMemberSerializer(serializers.ModelSerializer):
         password=validated_data['password'],
         phoneno = validated_data['user']['phoneno'],
         department = validated_data['user']['department'],
+        uni=validated_data['user']['uni'],
         is_active = False,
         role=User.STUDENT
         )
