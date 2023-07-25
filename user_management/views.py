@@ -76,8 +76,9 @@ class allusersAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
-            if request.GET.get("role") == "supervisor":                    
-                my_objects = supervisor.objects.filter(deleted_at=None)
+            if request.GET.get("role") == "supervisor":      
+                print(request.user.department, request.user.uni)              
+                my_objects = supervisor.objects.filter(user__uni=request.user.uni, user__department=request.user.department, deleted_at=None)
                 serialize = AddSupervisorSerializer(my_objects, many=True)
                 return Response(       
                         {
@@ -89,7 +90,7 @@ class allusersAPI(APIView):
                         }
                     )
             elif request.GET.get("role") == "student":
-                my_objects = teamMember.objects.filter(deleted_at=None)
+                my_objects = teamMember.objects.filter(user__uni=request.user.uni, user__department=request.user.department, deleted_at=None)
                 serialize = teamMemberSerializer(my_objects, many=True)
                 return Response(       
                         {
@@ -270,7 +271,7 @@ class studentlistAPI(APIView):
     def get(self, request):
         try:
             department_obj = request.user.department
-            tm = teamMember.objects.filter(user__department=department_obj, deleted_at=None, project_id=None)
+            tm = teamMember.objects.filter(user__department=department_obj, user__uni=request.user.uni, deleted_at=None, project_id=None)
             serialize = updateStudentSerializer(tm, many=True)        
             return Response(
                 {
