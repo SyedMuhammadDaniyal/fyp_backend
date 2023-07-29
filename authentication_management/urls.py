@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterUserAPIView, LoginUserApi, Validate_otpAPI, allfyppanelApi
+from .views import RegisterUserAPIView, LoginUserApi, Validate_otpAPI
 from project.views import projectAPIView, projectlistAPI, updateprojectAPI, deleteprojectAPI, addteammemberAPI, allprojectAPI, changesupervisorAPI, studentprojectwiseAPI
 from milestone.views import createmilestoneAPI, allmilestoneAPI, updatemilestoneAPI, deletemilestoneAPI, GetAllMilestones, SubmissionView, MilestoneSubmissionView, marksView, givemarksView
 from department.views import departmentAPI
@@ -53,5 +53,4 @@ urlpatterns = [
   path("marks", marksView.as_view()),
   path('givemarks', givemarksView.as_view()),
   path('valotp', Validate_otpAPI.as_view()),
-  path('allfyppanel', allfyppanelApi.as_view()),
 ]
