@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from fyp_management.permission import IsSuperAdmin
-from core.models import department, University
+from core.models import department, University, User
 from .serializers import departmentSerializer
 from rest_framework.views import APIView
 from django.utils import timezone
@@ -93,8 +93,16 @@ class departmentAPI(APIView):
 
     def patch(self, request):
         try:
-            sup = department.objects.get(id=request.data.get("dep_id"), deleted_at=None)
-            serialize = departmentSerializer(sup,data=request.data)
+            uni = request.user.uni_id
+            dep = department.objects.get(id=request.data.get("dep_id"), deleted_at=None)
+            fyp_panel = User.objects.get(id=request.data.get("hod_id"), deleted_at=None)
+            hod = fyp_panel.name
+            data = {
+                'name':request.data.get("name"),
+                'hod':hod,
+                'uni':uni
+            }
+            serialize = departmentSerializer(dep,data=data)
             if serialize.is_valid():
                 serialize.save()
                 return Response(
@@ -102,6 +110,16 @@ class departmentAPI(APIView):
                 "data":serialize.data,
                 "status": 200,
                 "message": "Success",
+                "body": {},
+                "exception": None
+                }
+            )
+            else:
+                return Response(
+                {
+                "data":[],
+                "status": 400,
+                "message": serialize.errors,
                 "body": {},
                 "exception": None
                 }
