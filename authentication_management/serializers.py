@@ -58,9 +58,3 @@ class LoginSerializer(serializers.Serializer):
   # class Meta:
   #   model = User
   #   fields = "__all__"
-
-class fyppanelSerializer(serializers.ModelSerializer):
-
-  class Meta:
-    model = User
-    fields = ['id', 'name']
