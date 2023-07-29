@@ -4,12 +4,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import HttpResponse
-from authentication_management.serializers import RegisterSerializer, LoginSerializer
+from authentication_management.serializers import RegisterSerializer, LoginSerializer, fyppanelSerializer
 from authentication_management.utils.contant import LoginMessages
 from core.models import User, fyppanel
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from fyp_management.permission import IsFYPPanel
+from fyp_management.permission import IsSuperAdmin
 from rest_framework.decorators import api_view 
 from django.db import transaction
 from django.core.mail import send_mail
@@ -20,7 +21,7 @@ import random
 
 
 class RegisterUserAPIView(APIView):
-    permission_classes = [IsAuthenticated & IsFYPPanel]
+    permission_classes = [IsAuthenticated & IsSuperAdmin]
 
     @transaction.atomic  
     def post(self, request):
@@ -63,6 +64,36 @@ class RegisterUserAPIView(APIView):
                 }
             )
 
+class allfyppanelApi(APIView):
+    permission_classes = [IsAuthenticated & IsSuperAdmin]
+    def get(self, request):    
+        try:
+            uni_id = request.user.uni_id
+            dep_id = request.GET.get("dep_id")
+            fyppanel = User.objects.filter(uni__id=uni_id, department=dep_id, role="fyp_panel", deleted_at=None)
+            serialize = fyppanelSerializer(fyppanel, many=True)
+            # data = {
+            #     'id':fyppanel.id,
+            #     'name':fyppanel.name
+            # }
+            return Response(
+                {
+                "data":serialize.data,
+                "status": 200,
+                "message": "Success",
+                "body": {},
+                "exception": None
+                }
+            )
+        except Exception as e:
+            return Response(
+                {
+                "status": 400,
+                "message": "Bad Request",
+                "body": {},
+                "exception": str(e)
+                }
+            )
 
 class LoginUserApi(APIView):
     def post(self, request):
