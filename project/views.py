@@ -237,8 +237,8 @@ class allprojectAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def get(self, request):
         try:
-            pmo = fyppanel.objects.get(user=request.user, deleted_at=None)
-            my_objects = project.objects.filter(department=pmo.user.department, deleted_at=None)
+            dep_id = request.user.department
+            my_objects = project.objects.filter(department=dep_id, deleted_at=None)
             serializer = projectlistSerializer(my_objects, many=True)
             return Response({
                         "status": 200,
