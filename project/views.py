@@ -12,8 +12,32 @@ from teamMember.serializers import teamMemberSerializer
 class projectAPIView(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def post(self, request):
+        department = request.user.department
+        dep_id = department.id
         try:
-            serialize = projectSerializer(data=request.data)
+            # Assuming you have the 'request' object with the JSON data
+            # Fetching values from request.data dynamically
+            
+            json_title = request.data.get("title")
+            json_year = request.data.get("year")
+            json_batch = request.data.get("batch")
+            json_description = request.data.get("description")
+            json_domain = request.data.get("domain")
+            json_no_of_group_members = int(request.data.get("no_of_group_members"))
+            json_supervisor = int(request.data.get("supervisor"))
+
+            # Creating the dictionary
+            data = {
+                'title': json_title,
+                'year': json_year,
+                'batch': json_batch,
+                'description': json_description,
+                'domain': json_domain,
+                'no_of_group_members': json_no_of_group_members,
+                'supervisor': json_supervisor,
+                'department': dep_id
+            }
+            serialize = projectSerializer(data=data)
             if serialize.is_valid():
                 serialize.save()
                 return Response(
