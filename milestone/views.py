@@ -227,15 +227,18 @@ class MilestoneSubmissionView(APIView):
     def post(self, request):
         try:
             uploaded_file = request.FILES.get('file')
-            extension = uploaded_file.name.split('.')[-1].lower()
-            if extension not in ['zip', 'rar']:
-                return Response({
-                    "status": 422,
-                    "message": "File must be a ZIP or RAR archive.",
-                    "body": {},
-                    "exception": None
-                    }
-                )
+            # extension = uploaded_file.name.split('.')[-1].lower()
+            # print(extension)
+            # if extension not in ['zip', 'rar']:
+            #     return Response({
+            #         "status": 422,
+            #         "message": "File must be a ZIP or RAR archive.",
+            #         "body": {},
+            #         "exception": "File type not supported."
+            #         }
+            #     )
+            #     print(22)
+            # print(33)
             m = milestone.objects.get(id=request.data.get('milestone_id'), deleted_at=None)
             t = m.milestone_name
             options = UploadFileRequestOptions(
@@ -292,7 +295,7 @@ class MilestoneSubmissionView(APIView):
 
 
 class givemarksView(APIView):
-    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
+    # permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
     
     def post(self, request):
         try:
@@ -307,6 +310,18 @@ class givemarksView(APIView):
                     }
                 )
             else:
+                mil = milestone.objects.get(id=request.data.get("milestone"), deleted_at=None)
+                marks = mil.marks
+                in_marks = request.data.get("marks")
+                if in_marks > marks:
+                    return Response(
+                    {
+                    "status": 200,
+                    "message": f"Marks should be less then or equal to {marks}",
+                    "body": {},
+                    "exception": None
+                    }
+                )
                 mk = Milestonemarks.objects.filter(project=request.data.get("project"),milestone=request.data.get("milestone"), m_distributor=request.data.get("m_distributor"), deleted_at=None)
                 if len(mk) > 0:
                     return Response(
@@ -318,6 +333,7 @@ class givemarksView(APIView):
                         }
                     )
                 else:
+
                     serialize = milestonemarkSerializer(data=request.data)
                     if serialize.is_valid():
                         serialize.save()

@@ -21,7 +21,7 @@ import random
 
 
 class RegisterUserAPIView(APIView):
-    permission_classes = [IsAuthenticated & IsSuperAdmin]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
 
     @transaction.atomic  
     def post(self, request):
