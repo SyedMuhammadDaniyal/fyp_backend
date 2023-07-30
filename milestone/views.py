@@ -295,7 +295,7 @@ class MilestoneSubmissionView(APIView):
 
 
 class givemarksView(APIView):
-    # permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
+    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
     
     def post(self, request):
         try:

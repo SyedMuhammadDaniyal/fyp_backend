@@ -22,7 +22,7 @@ class ticketSerializer(serializers.ModelSerializer):
     assignee = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     sprint = serializers.PrimaryKeyRelatedField(queryset=Sprint.objects.all())    
     status = serializers.CharField()
-    github_link = serializers.CharField()
+    # github_link = serializers.CharField()
     creator_name = serializers.PrimaryKeyRelatedField(read_only = True, source='creator.name')
     assignee_name = serializers.PrimaryKeyRelatedField(read_only = True, source='assignee.name')
 

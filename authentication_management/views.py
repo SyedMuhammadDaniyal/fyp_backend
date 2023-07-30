@@ -65,7 +65,7 @@ class RegisterUserAPIView(APIView):
             )
 
 class allfyppanelApi(APIView):
-    permission_classes = [IsAuthenticated & IsSuperAdmin]
+    permission_classes = [IsAuthenticated & (IsSuperAdmin| IsFYPPanel)]
     def get(self, request):    
         try:
             uni_id = request.user.uni_id

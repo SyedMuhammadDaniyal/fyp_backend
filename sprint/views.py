@@ -379,6 +379,8 @@ class getspecificticketAPI(APIView):
             )
 
 class ticketlogAPI(APIView):
+    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
+
     def get(self, request):
         try:
             pro = project.objects.get(id=request.GET.get('id'))
