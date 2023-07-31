@@ -5,7 +5,7 @@ from milestone.serializers import milestoneSerializer, milestoneworkSerializer, 
 from core.models import milestone, project, supervisor
 from rest_framework.response import Response
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
-from datetime import datetime
+from datetime import datetime, date
 from fyp_management.settings import imagekit
 from milestone.models import MilestoneWork
 from core.models import milestone
@@ -311,49 +311,61 @@ class givemarksView(APIView):
                 )
             else:
                 mil = milestone.objects.get(id=request.data.get("milestone"), deleted_at=None)
-                marks = mil.marks
-                in_marks = request.data.get("marks")
-                if in_marks > marks:
-                    return Response(
-                    {
-                    "status": 200,
-                    "message": f"Marks should be less then or equal to {marks}",
-                    "body": {},
-                    "exception": None
-                    }
-                )
-                mk = Milestonemarks.objects.filter(project=request.data.get("project"),milestone=request.data.get("milestone"), m_distributor=request.data.get("m_distributor"), deleted_at=None)
-                if len(mk) > 0:
-                    return Response(
+                defend_date = mil.milestone_defending_date
+                current_date = date.today()
+                difference = current_date - defend_date
+                if abs(difference.days) == 0:
+                    marks = mil.marks
+                    in_marks = request.data.get("marks")
+                    if in_marks > marks:
+                        return Response(
                         {
                         "status": 200,
-                        "message": "This form is allowed once submission",
+                        "message": f"Marks should be less then or equal to {marks}",
                         "body": {},
                         "exception": None
                         }
                     )
-                else:
-
-                    serialize = milestonemarkSerializer(data=request.data)
-                    if serialize.is_valid():
-                        serialize.save()
+                    mk = Milestonemarks.objects.filter(project=request.data.get("project"),milestone=request.data.get("milestone"), m_distributor=request.data.get("m_distributor"), deleted_at=None)
+                    if len(mk) > 0:
                         return Response(
                             {
                             "status": 200,
-                            "message": "Success",
+                            "message": "This form is allowed once submission",
                             "body": {},
                             "exception": None
                             }
                         )
                     else:
-                        return Response(
-                            {
-                            "status": 422,
-                            "message": serialize.errors,
-                            "body": {},
-                            "exception": "some exception"
-                            }
-                        )
+                        serialize = milestonemarkSerializer(data=request.data)
+                        if serialize.is_valid():
+                            serialize.save()
+                            return Response(
+                                {
+                                "status": 200,
+                                "message": "Success",
+                                "body": {},
+                                "exception": None
+                                }
+                            )
+                        else:
+                            return Response(
+                                {
+                                "status": 422,
+                                "message": serialize.errors,
+                                "body": {},
+                                "exception": "some exception"
+                                }
+                            )
+                else:
+                    return Response(
+                        {
+                        "status": 200,
+                        "message": f"You have to give marks before {defend_date} milestone defending date. Not allowed today.",
+                        "body": {},
+                        "exception": None
+                        }
+                    )
         except Exception as e:
           return Response(       
                 {

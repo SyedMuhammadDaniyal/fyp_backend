@@ -110,6 +110,9 @@ class milestone(BaseModel):
     rubrics = models.JSONField()
     marks = models.FloatField(default=50.0)
 
+    def __str__(self):
+        return self.milestone_name
+
 class notification(BaseModel):
     title = models.CharField(max_length=75)
     isactive = models.BooleanField(default=False)
@@ -138,6 +141,9 @@ class project(BaseModel):
     department = models.ForeignKey(department, on_delete=models.RESTRICT)
     milestone = models.ManyToManyField(milestone)
     notification = models.ManyToManyField(notification)
+
+    def __str__(self):
+        return self.title
 
 
 class teamMember(BaseModel):
