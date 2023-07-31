@@ -339,9 +339,7 @@ class getspecificticketAPI(APIView):
     def get(self, request):
         try:
             if request.user.role == User.SUPERVISOR:
-                sup = supervisor.objects.get(user=request.user, deleted_at=None)
-                pro = project.objects.filter(supervisor=sup, deleted_at=None)
-                sp = Sprint.objects.filter(project__in=pro, deleted_at=None)
+                sp = Sprint.objects.filter(project__in=request.GET.get("pro_id"), deleted_at=None)
                 tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
                 serialize = ticketSerializer(tc, many=True)
                 return Response(       
