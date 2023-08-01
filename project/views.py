@@ -74,11 +74,21 @@ class projectlistAPI(APIView):
         try:
             if request.user.role == User.SUPERVISOR:
                 sup = supervisor.objects.get(user=request.user, deleted_at=None)
-                pro = project.objects.filter(supervisor=sup, deleted_at=None)
-                serialize = projectlistSerializer(pro, many=True)   
+                pro_queryset = project.objects.filter(supervisor=sup, deleted_at=None)
+                data = []
+                for pro in pro_queryset:
+                    team_member = teamMember.objects.filter(project_id=pro.id, deleted_at=None)
+                    current_no_of_group_members = len(team_member)
+                    serialize = projectlistSerializer(pro)
+                    project_data = serialize.data 
+                    data_dict = {
+                        'current_no_of_group_members': current_no_of_group_members,
+                        **project_data
+                    }
+                    data.append(data_dict)
                 return Response(       
                             {
-                            "data": serialize.data,
+                            "data": data,
                             "status": 200,
                             "message": "Success",
                             "body": {},
@@ -113,29 +123,64 @@ class updateprojectAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
     def patch(self, request):
         try:
-            sup = project.objects.get(id=request.data.get("id"), deleted_at=None)
-            serialize = projectSerializer(sup,data=request.data)
-            if serialize.is_valid():
-                serialize.save()
-                return Response(       
-                        {
-                        "data": serialize.data,
-                        "status": 200,
-                        "message": "Success",
-                        "body": {},
-                        "exception": None 
-                        }
+            try:
+                sup = project.objects.get(id=request.data.get("id"), deleted_at=None)
+                team_member = teamMember.objects.filter(project__id=request.data.get("id"), deleted_at=None)
+                if len(team_member) >= request.data.get("no_of_group_members"):
+                    return Response(       
+                            {
+                            "data": [],
+                            "status": 200,
+                            "message": f"You are not allowed to direct decrease the no_of_group_members",
+                            "body": {},
+                            "exception": None 
+                            }
                         )
-            else:
-                return Response(
-                        {
-                        "status": 422,
-                        "message": serialize.errors,
-                        "body": {},
-                        "exception": "some exception" 
-                        }
-                    )
-                
+                else:
+                    serialize = projectSerializer(sup,data=request.data)
+                    if serialize.is_valid():
+                        serialize.save()
+                        return Response(       
+                                {
+                                "data": serialize.data,
+                                "status": 200,
+                                "message": "Success",
+                                "body": {},
+                                "exception": None 
+                                }
+                                )
+                    else:
+                        return Response(
+                                {
+                                "status": 422,
+                                "message": serialize.errors,
+                                "body": {},
+                                "exception": "some exception" 
+                                }
+                            )
+            except:
+                sup = project.objects.get(id=request.data.get("id"), deleted_at=None)
+                serialize = projectSerializer(sup,data=request.data)
+                if serialize.is_valid():
+                    serialize.save()
+                    return Response(       
+                            {
+                            "data": serialize.data,
+                            "status": 200,
+                            "message": "Success",
+                            "body": {},
+                            "exception": None 
+                            }
+                        )
+                else:
+                    return Response(
+                            {
+                            "status": 422,
+                            "message": serialize.errors,
+                            "body": {},
+                            "exception": "some exception" 
+                            }
+                        )       
         except Exception as e:
             return Response(       
                     {
