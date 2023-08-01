@@ -198,7 +198,7 @@ class addteammemberAPI(APIView):
             )
         
 
-    def delete(self, request):
+    def patch(self, request):
         try:
             pro = project.objects.get(id=request.data.get("project_id"), deleted_at=None)
             tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)

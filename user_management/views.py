@@ -13,7 +13,7 @@ from django.db import transaction
 
 # Create your views here.
 class CreateUserView(APIView):
-    # permission_classes = [IsAuthenticated & IsFYPPanel]
+    permission_classes = [IsAuthenticated & IsFYPPanel]
     
     @transaction.atomic
     def post(self, request):
