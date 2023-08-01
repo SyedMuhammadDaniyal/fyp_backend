@@ -342,30 +342,53 @@ class getspecificticketAPI(APIView):
                 sp = Sprint.objects.filter(project__in=request.GET.get("pro_id"), deleted_at=None)
                 tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
                 serialize = ticketSerializer(tc, many=True)
+                data = serialize.data
+                response = {"todo": [], "inprogress": [], "review":[], "completed":[]}
+                for item in data:
+                    ticket = {"ticket_id":item["id"],"ticket_name": item["title"], "start_date": item["start_date"], "end_date": item["end_date"], "creator": item["creator"], "assignee": item["assignee"], "sprint": item["sprint"], "description": item["description"], "status": item["status"], 'assignee_name':item['assignee_name'], 'creator_name':item['creator_name']}
+                    if item["status"] == "todo":
+                        response["todo"].append(ticket)
+                    elif item["status"] == "inprogress":
+                        response["inprogress"].append(ticket)
+                    elif item["status"] == "review":
+                        response["review"].append(ticket)
+                    elif item["status"] == "completed":
+                        response["completed"].append(ticket)
                 return Response(       
                     {
-                    "data": serialize.data,
-                    "status": 200,
-                    "message": "Success",
-                    "body": {},
-                    "exception": None 
-                    }
-                )    
-            elif request.user.role == User.STUDENT:
-                tm = teamMember.objects.get(user=request.user, deleted_at=None)
-                sp = Sprint.objects.filter(project__in=[tm.project], deleted_at=None)
-                tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
-                serialize = ticketSerializer(tc, many=True)
-                return Response(       
-                    {
-                    "data": serialize.data,
+                    "data": response,
                     "status": 200,
                     "message": "Success",
                     "body": {},
                     "exception": None 
                     }
                 )
-
+            elif request.user.role == User.STUDENT:
+                tm = teamMember.objects.get(user=request.user, deleted_at=None)
+                sp = Sprint.objects.filter(project__in=[tm.project], deleted_at=None)
+                tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
+                serialize = ticketSerializer(tc, many=True)
+                data = serialize.data
+                response = {"todo": [], "inprogress": [], "review":[], "completed":[]}
+                for item in data:
+                    ticket = {"ticket_id":item["id"],"ticket_name": item["title"], "start_date": item["start_date"], "end_date": item["end_date"], "creator": item["creator"], "assignee": item["assignee"], "sprint": item["sprint"], "description": item["description"], "status": item["status"], 'assignee_name':item['assignee_name'], 'creator_name':item['creator_name']}
+                    if item["status"] == "todo":
+                        response["todo"].append(ticket)
+                    elif item["status"] == "inprogress":
+                        response["inprogress"].append(ticket)
+                    elif item["status"] == "review":
+                        response["review"].append(ticket)
+                    elif item["status"] == "completed":
+                        response["completed"].append(ticket)
+                return Response(       
+                    {
+                    "data": response,
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
         except Exception as e:
             return Response(       
                 {
