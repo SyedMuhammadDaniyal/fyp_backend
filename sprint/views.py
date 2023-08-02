@@ -508,3 +508,29 @@ class ticketAPI(APIView):
                 "exception": str(e) 
                 }
             )
+
+
+class supervisorsprintAPI(APIView):
+        permission_classes = [IsAuthenticated & IsSupervisor] 
+        def get(self, request):
+            try:
+                sp = Sprint.objects.filter(project__in=request.GET.get("pro_id"), deleted_at=None)
+                serialize = sprintSerializer(sp, many=True)
+                return Response(       
+                    {
+                    "data": serialize.data,
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )    
+            except Exception as e:
+                return Response(       
+                    {
+                    "status": 404,
+                    "message": serialize.errors,
+                    "body": {},
+                    "exception": str(e) 
+                    }
+                )
