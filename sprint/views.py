@@ -578,3 +578,30 @@ class supervisorsprintAPI(APIView):
                     "exception": str(e) 
                     }
                 )
+
+
+class studentticketAPI(APIView):
+    permission_classes = [IsAuthenticated & IsStudent]
+    def get(self, request):
+        try:
+            user = request.user.id
+            tc = Ticket.objects.filter(assignee_id=user, deleted_at=None)
+            serialize = ticketSerializer(tc, many=True)
+            return Response(       
+                {
+                "data": serialize.data,
+                "status": 200,
+                "message": "Success",
+                "body": {},
+                "exception": None 
+                }
+            )
+        except Exception as e:
+            return Response(       
+                {
+                "status": 404,
+                # "message": serialize.errors,
+                "body": {},
+                "exception": str(e) 
+                }
+            )

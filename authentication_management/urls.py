@@ -7,7 +7,7 @@ from department.views import departmentAPI
 from notifications.views import createnotificationAPI, allnotificationsAPI, getallnotificationsAPI, deletenotificationAPI, updatenotificationAPI
 from teamMember.views import RegisterteamMemberAPIView
 from user_management.views import CreateUserView, allusersAPI, updatesupervisorAPI, studentlistAPI, deletesupervisorAPI, updatestudentAPI, deletestudentAPI
-from sprint.views import createsprintAPI, updatesprintAPI, deletesprintAPI, getspecificsprintAPI, allsprintAPI, createticketAPI, allticketAPI, deleteticketAPI, updateticketAPI, getspecificticketAPI, ticketlogAPI, ProjectStatusAPI, ticketAPI, supervisorsprintAPI
+from sprint.views import createsprintAPI, updatesprintAPI, deletesprintAPI, getspecificsprintAPI, allsprintAPI, createticketAPI, allticketAPI, deleteticketAPI, updateticketAPI, getspecificticketAPI, ticketlogAPI, ProjectStatusAPI, ticketAPI, supervisorsprintAPI, studentticketAPI
 
 
 urlpatterns = [
@@ -60,4 +60,5 @@ urlpatterns = [
   path('ticket', ticketAPI.as_view()),
   path('supervisorsprint', supervisorsprintAPI.as_view()),
   path('markasCompleted', markasCompletedApi.as_view()),
+  path('studentticket', studentticketAPI.as_view()),
 ]

@@ -6,6 +6,9 @@ from supervisor.serializers import AddSupervisorSerializer, updateSupervisorSeri
 from teamMember.serializers import teamMemberSerializer, updateStudentSerializer
 from core.models import User, teamMember, supervisor, project
 from project.serializers import projectSerializer
+from django.core.mail import send_mail
+from django.conf import settings
+from google.auth import exceptions
 from django.utils import timezone
 from rest_framework import status
 from django.db import transaction
@@ -22,6 +25,15 @@ class CreateUserView(APIView):
                 serialize = AddSupervisorSerializer(data=request.data)
                 if serialize.is_valid():
                     serialize.save()
+                    subject = 'SUPERVISOR Registration'
+                    email_from = request.user
+                    message = f"You are registered in PMBOTICS By {request.user.uni.name}. You are welcome into the system PMBOTICS By {request.user.uni.name}.\nDepartment {request.user.department}\nPlease find your login credentials:\nEmail: {request.data.get('email')}\nPassword: {request.data.get('password')}\nDue to system security, please do not provide your credentials to anyone.\nFYP Co-ordinator Name: {request.user.name}\nEmail Id: {email_from}"
+                    recipient_list = [request.data.get('email'), email_from]
+                    try:
+                        send_mail(subject, message, email_from, recipient_list)
+                    except exceptions.GoogleAuthError:
+                        return Response({'error': 'Failed to send email.'}, status=500)
+
                     return Response(
                         {
                         "status": 200,
@@ -43,6 +55,15 @@ class CreateUserView(APIView):
                 serialize = teamMemberSerializer(data=request.data)                        
                 if serialize.is_valid():
                     serialize.save()
+                    subject = 'STUDENT Registration'
+                    email_from = request.user
+                    message = f"You are registered in PMBOTICS By {request.user.uni.name}. You are welcome into the system PMBOTICS By {request.user.uni.name}.\nDepartment {request.user.department}\nPlease find your login credentials:\nEmail: {request.data.get('email')}\nPassword: {request.data.get('password')}\nDue to system security, please do not provide your credentials to anyone.\nFYP Co-ordinator Name: {request.user.name}\nEmail Id: {email_from}"
+                    recipient_list = [request.data.get('email'), email_from]
+                    try:
+                        send_mail(subject, message, email_from, recipient_list)
+                    except exceptions.GoogleAuthError:
+                        return Response({'error': 'Failed to send email.'}, status=500)
+
                     return Response(
                         {
                         "status": 200,
@@ -266,7 +287,7 @@ class deletestudentAPI(APIView):
 
 
 class studentlistAPI(APIView):
-    permission_classes = [IsAuthenticated & IsSupervisor]
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
     def get(self, request):
         try:
             department_obj = request.user.department

@@ -7,7 +7,9 @@ from core.models import User, fyppanel, project, supervisor, teamMember, milesto
 from project.serializers import projectlistSerializer, projectSerializer
 from teamMember.serializers import teamMemberSerializer
 from milestone.models import Milestonemarks
-# from rest_framework.permissions import IsAuthenticated
+from django.core.mail import send_mail
+from django.conf import settings
+from google.auth import exceptions
 
 # # Create your views here.
 class projectAPIView(APIView):
@@ -16,8 +18,6 @@ class projectAPIView(APIView):
         department = request.user.department
         dep_id = department.id
         try:
-            # Assuming you have the 'request' object with the JSON data
-            # Fetching values from request.data dynamically
             
             json_title = request.data.get("title")
             json_year = request.data.get("year")
@@ -41,6 +41,16 @@ class projectAPIView(APIView):
             serialize = projectSerializer(data=data)
             if serialize.is_valid():
                 serialize.save()
+                subject = f'WELCOME IN {json_title} PROJECT'
+                email_from = request.user
+                message = f"You are added in {json_title} PROJECT By FYP Co-ordinator of {request.user.department} department of {request.user.uni}\nYou are required to start the project by adding {json_no_of_group_members} Students (team Members) init.\nPlease find below mentioned link to access the system.\n{'https://pmbotics.netlify.app/'}\nUse your login credentials which is given to you by registration email.\nBest Regards\nFYP Co-ordinator Name: {request.user.name}\nEmail Id: {email_from}\nThankyou"
+                print(message)
+                recipient_list = [request.data.get('email'), email_from]
+                try:
+                    send_mail(subject, message, email_from, recipient_list)
+                except exceptions.GoogleAuthError:
+                    return Response({'error': 'Failed to send email.'}, status=500)
+
                 return Response(
                     {
                     "status": 200,

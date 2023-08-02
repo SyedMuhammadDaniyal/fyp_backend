@@ -98,12 +98,18 @@ class fyppanel(BaseModel):
     facultyid = models.CharField(max_length=45, unique=True)       
     designation = models.CharField(max_length=45)
     var = models.CharField(choices=varify, max_length=20, null=True)
+
+    def __str__(self):
+        return self.user.name
     
 class supervisor(BaseModel):
     user = models.OneToOneField("core.User", on_delete=models.RESTRICT, related_name='user')
     faculty_no = models.CharField(max_length=45, unique=True)
     field_of_interest = models.CharField(max_length=45)
     designation = models.CharField(max_length=45, default=False)
+
+    def __str__(self):
+        return self.user.name
     
 
 class milestone(BaseModel):
@@ -127,6 +133,8 @@ class notification(BaseModel):
     createdate = models.DateField()
     createtime = models.TimeField()
 
+    def __str__(self):
+        return self.title
 
 class project(BaseModel):
     title = models.CharField(max_length=100, unique=True)
@@ -158,3 +166,6 @@ class teamMember(BaseModel):
     seatno = models.CharField(max_length=50, unique=True)
     enrollmentno = models.CharField(max_length=50, unique=True)
     project = models.ForeignKey(project, null=True, on_delete=models.RESTRICT)
+
+    def __str__(self):
+        return self.user.name
