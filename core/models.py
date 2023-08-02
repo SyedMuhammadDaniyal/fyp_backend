@@ -8,7 +8,7 @@ from django.contrib.auth.base_user import BaseUserManager
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from datetime import datetime
+from django.core.exceptions import PermissionDenied
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     """
@@ -50,7 +50,7 @@ class University(BaseModel):
 class department(BaseModel):
     name = models.CharField(max_length=45)
     hod = models.CharField(max_length=45)
-    uni = models.ForeignKey(University, on_delete=models.RESTRICT) #, related_name='University'
+    uni = models.ForeignKey(University, on_delete=models.RESTRICT)
 
     def __str__(self):
         return self.name
@@ -81,6 +81,11 @@ class User(AbstractUser, BaseModel):
     # username field
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+    
+    def delete(self, *args, **kwargs):
+        if self.role == 'admin':
+            raise PermissionDenied("Deletion of admin user not allowed www")
+        super(User, self).delete(*args, **kwargs)
 
 class fyppanel(BaseModel):
     VARIFIED = "varified"

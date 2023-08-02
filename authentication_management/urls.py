@@ -41,7 +41,7 @@ urlpatterns = [
   path('updatenotification', updatenotificationAPI.as_view()),
   path('createsprint', createsprintAPI.as_view()),
   path('updatesprint',updatesprintAPI.as_view()),
-  path('deletesprint/<int:pk>', deletesprintAPI.as_view()),
+  path('deletesprint', deletesprintAPI.as_view()),
   path('getspecificsprint', getspecificsprintAPI.as_view()),
   path('allsprint', allsprintAPI.as_view()),
   path('createticket', createticketAPI.as_view()),

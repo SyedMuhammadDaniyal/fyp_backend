@@ -1,6 +1,5 @@
 from django.contrib import admin
 from core.models import supervisor, department, project, milestone, fyppanel, User, notification, teamMember, University
-from sprint.models import Sprint
 
 # Register your models here.
 admin.site.register(supervisor)

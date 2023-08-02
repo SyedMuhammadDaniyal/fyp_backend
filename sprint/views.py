@@ -128,28 +128,40 @@ class updatesprintAPI(APIView):
 
 class deletesprintAPI(APIView):
     permission_classes = [IsAuthenticated & IsSupervisor]
-    def delete(self, request, pk):
+    def delete(self, request):
         try:
+            pk = request.GET.get("sprint_id")
             my_object = Sprint.objects.get(pk=pk, deleted_at=None)
-            my_object.deleted_at = timezone.now()
-            my_object.save()
-        except Sprint.DoesNotExist:
-            return Response(
-                        {
-                        "status": 404,
-                        "message": "Not Found",
-                        "body": {},
-                        "exception": None 
-                        }
-                    )
-        return Response(
-                        {
-                        "status": 200,
-                        "message": "Successfuly deleted",
-                        "body": {},
-                        "exception": None 
-                        }
-                    )
+            ticket = Ticket.objects.filter(sprint=my_object, deleted_at=None, status__in=["todo", "inprogress", "review"]).count()
+            if ticket == 0:
+                my_object.deleted_at = timezone.now()
+                my_object.save()
+                return Response(
+                    {
+                    "status": 200,
+                    "message": "Successfuly deleted",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
+            else:
+                return Response(
+                {
+                "status": 400,
+                "message": f"Sprint Cannot be deleted because it have {ticket} active tasks in it",
+                "body": {},
+                "exception": None 
+                }
+            )
+        except Exception as e:
+            return Response(       
+                    {
+                    "status": 404,
+                    "message": "some exception",
+                    "body": {},
+                    "exception": str(e) 
+                    }
+                )
 
 class allsprintAPI(APIView):
     permission_classes = [IsAuthenticated & IsFYPPanel]
