@@ -587,9 +587,21 @@ class studentticketAPI(APIView):
             user = request.user.id
             tc = Ticket.objects.filter(assignee_id=user, deleted_at=None)
             serialize = ticketSerializer(tc, many=True)
+            data = serialize.data
+            response = {"todo": [], "inprogress": [], "review":[], "completed":[]}
+            for item in data:
+                ticket = {"ticket_id":item["id"],"ticket_name": item["title"], "start_date": item["start_date"], "end_date": item["end_date"], "creator": item["creator"], "assignee": item["assignee"], "sprint": item["sprint"], "description": item["description"], "status": item["status"], 'assignee_name':item['assignee_name'], 'creator_name':item['creator_name']}
+                if item["status"] == "todo":
+                    response["todo"].append(ticket)
+                elif item["status"] == "inprogress":
+                    response["inprogress"].append(ticket)
+                elif item["status"] == "review":
+                    response["review"].append(ticket)
+                elif item["status"] == "completed":
+                    response["completed"].append(ticket)
             return Response(       
                 {
-                "data": serialize.data,
+                "data": response,
                 "status": 200,
                 "message": "Success",
                 "body": {},
