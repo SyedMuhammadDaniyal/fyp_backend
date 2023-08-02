@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
 from core.models import User, project, supervisor, teamMember
-
+from datetime import datetime, date
 from .models import Sprint, Ticket, TicketLog
 from .serializers import sprintSerializer, ticketSerializer
 
@@ -301,29 +301,61 @@ class updateticketAPI(APIView):
     permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
     def patch(self, request):
         try:
-            tc = Ticket.objects.get(id=request.data.get("id"), deleted_at=None)
-            serialize = ticketSerializer(tc,data=request.data)
-            if serialize.is_valid():
-                serialize.save()
-                return Response(       
-                    {
-                    "data": serialize.data,
-                    "status": 200,
-                    "message": "Success",
-                    "body": {},
-                    "exception": None 
-                    }
-                )
-            else:
-                return Response(
-                    {
-                    "status": 422,
-                    "message": serialize.errors,
-                    "body": {},
-                    "exception": "some exception" 
-                    }
-                )
-                
+            if request.user.role == User.SUPERVISOR: 
+                tc = Ticket.objects.get(id=request.data.get("id"), deleted_at=None)
+                serialize = ticketSerializer(tc,data=request.data)
+                if serialize.is_valid():
+                    serialize.save()
+                    return Response(       
+                        {
+                        "data": serialize.data,
+                        "status": 200,
+                        "message": "Success",
+                        "body": {},
+                        "exception": None 
+                        }
+                    )
+                else:
+                    return Response(
+                        {
+                        "status": 422,
+                        "message": serialize.errors,
+                        "body": {},
+                        "exception": "some exception" 
+                        }
+                    )
+            elif request.user.role == User.STUDENT:
+                tc = Ticket.objects.get(id=request.data.get("id"), deleted_at=None)
+                last_date = tc.end_date
+                current_date = date.today()
+                difference = current_date - last_date
+                if difference.days > 0:
+                    time_status = "late"
+                else:
+                    time_status = "ontime"
+                request.data['time_status'] = time_status
+                serialize = ticketSerializer(tc,data=request.data)
+                if serialize.is_valid():
+                    serialize.save()
+                    return Response(       
+                        {
+                        "data": serialize.data,
+                        "status": 200,
+                        "message": "Success",
+                        "body": {},
+                        "exception": None 
+                        }
+                    )
+                else:
+                    return Response(
+                        {
+                        "status": 422,
+                        "message": serialize.errors,
+                        "body": {},
+                        "exception": "some exception" 
+                        }
+                    )
+
         except Exception as e:
             return Response(       
                     {
