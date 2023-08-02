@@ -126,12 +126,12 @@ class updateprojectAPI(APIView):
             try:
                 sup = project.objects.get(id=request.data.get("id"), deleted_at=None)
                 team_member = teamMember.objects.filter(project__id=request.data.get("id"), deleted_at=None)
-                if len(team_member) >= request.data.get("no_of_group_members"):
+                if len(team_member) > request.data.get("no_of_group_members"):
                     return Response(       
                             {
                             "data": [],
                             "status": 200,
-                            "message": f"You are not allowed to direct decrease the no_of_group_members",
+                            "message": "You are not allowed to decrease number of group members becuase there are already more group members than your specified limit, In order to decrease group members. ask supervisor to remove some members from project",
                             "body": {},
                             "exception": None 
                             }

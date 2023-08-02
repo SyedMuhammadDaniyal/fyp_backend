@@ -226,7 +226,7 @@ class MilestoneSubmissionView(APIView):
 
     def post(self, request):
         try:
-            uploaded_file = request.FILES.get('file')
+            # uploaded_file = request.FILES.get('file')
             # extension = uploaded_file.name.split('.')[-1].lower()
             # print(extension)
             # if extension not in ['zip', 'rar']:
@@ -237,10 +237,15 @@ class MilestoneSubmissionView(APIView):
             #         "exception": "File type not supported."
             #         }
             #     )
-            #     print(22)
-            # print(33)
-            m = milestone.objects.get(id=request.data.get('milestone_id'), deleted_at=None)
-            t = m.milestone_name
+            mil = milestone.objects.get(id=request.data.get('milestone_id'), deleted_at=None)
+            t = mil.milestone_name
+            defend_date = mil.document_submission_date
+            current_date = date.today()
+            difference = current_date - defend_date
+            if difference.days > 0:
+                time_status = "late"
+            else:
+                time_status = "ontime"
             options = UploadFileRequestOptions(
                 use_unique_file_name=False,
                 tags=['abc', 'def'],
@@ -261,6 +266,7 @@ class MilestoneSubmissionView(APIView):
                 milestone_work.project=project.objects.get(id=request.data.get("project_id"))
                 milestone_work.milestone=milestone.objects.get(id=request.data.get("milestone_id"))
                 milestone_work.document=upload_response.url
+                milestone_work.time_status = time_status
                 milestone_work.save()
                 return Response({
                     "status": 200,
@@ -314,7 +320,7 @@ class givemarksView(APIView):
                 defend_date = mil.milestone_defending_date
                 current_date = date.today()
                 difference = current_date - defend_date
-                if abs(difference.days) == 0:
+                if difference.days >= 0:
                     marks = mil.marks
                     in_marks = request.data.get("marks")
                     if in_marks > marks:
@@ -361,7 +367,7 @@ class givemarksView(APIView):
                     return Response(
                         {
                         "status": 200,
-                        "message": f"You have to give marks before {defend_date} milestone defending date. Not allowed today.",
+                        "message": f"You have to give marks after and at {defend_date} milestone defending date. Not allowed today.",
                         "body": {},
                         "exception": None
                         }

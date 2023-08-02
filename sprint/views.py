@@ -462,7 +462,49 @@ class ProjectStatusAPI(APIView):
         except Exception as e:
             return Response({
                 "status": 500,
-                "message": "Internal Server Error",
+                "message": "Some exception",
                 "data": {},
                 "exception": str(e),
             })
+        
+
+class ticketAPI(APIView):
+    permission_classes = [IsAuthenticated & (IsSupervisor | IsStudent)]
+    def get(self, request):
+        try:
+            if request.user.role == User.SUPERVISOR:
+                sp = Sprint.objects.filter(project__in=request.GET.get("pro_id"), deleted_at=None)
+                tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
+                serialize = ticketSerializer(tc, many=True)
+                return Response(       
+                    {
+                    "data": serialize.data,
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
+            elif request.user.role == User.STUDENT:
+                tm = teamMember.objects.get(user=request.user, deleted_at=None)
+                sp = Sprint.objects.filter(project__in=[tm.project], deleted_at=None)
+                tc = Ticket.objects.filter(sprint__in=sp, deleted_at=None)
+                serialize = ticketSerializer(tc, many=True)
+                return Response(       
+                    {
+                    "data": serialize.data,
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None 
+                    }
+                )
+        except Exception as e:
+            return Response(       
+                {
+                "status": 404,
+                "message": serialize.errors,
+                "body": {},
+                "exception": str(e) 
+                }
+            )

@@ -29,7 +29,7 @@ class ticketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         # fields = "__all__"
-        fields = ['id', 'sprint', 'title', 'description', 'start_date', 'end_date', 'assignee', 'creator', 'assignee_name', 'creator_name', 'status', 'github_link']
+        fields = ['id', 'sprint', 'title', 'description', 'start_date', 'end_date', 'assignee', 'creator', 'assignee_name', 'creator_name', 'status', 'github_link', 'time_status']
 
 
     def create(self, validated_data):

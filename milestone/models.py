@@ -10,6 +10,7 @@ class MilestoneWork(BaseModel):
     description = models.TextField()
     document = models.CharField(max_length=255)
     project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
+    time_status = models.CharField(max_length=125, default="ontime")
 
 class Milestonemarks(BaseModel):
     project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
