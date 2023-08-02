@@ -9,6 +9,9 @@ class Sprint(BaseModel):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    def __str__(self):
+        return self.title
+
 class Ticket(BaseModel):
     TODO="todo"
     INPROGRESS="inprogress"
@@ -31,7 +34,10 @@ class Ticket(BaseModel):
     creator = models.ForeignKey("core.User", on_delete=models.RESTRICT, related_name='creator')
     assignee = models.ForeignKey("core.User", on_delete=models.RESTRICT, related_name='assignee')
     time_status = models.CharField(max_length=125, default="ontime")
-    
+
+    def __str__(self):
+        return self.title
+
 class TicketLog(BaseModel):
     ticket = models.ForeignKey(Ticket, on_delete=models.RESTRICT, related_name='ticket')
     github_link = models.CharField(max_length=255, null=True, blank=True)

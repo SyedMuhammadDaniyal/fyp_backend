@@ -12,10 +12,12 @@ class MilestoneWork(BaseModel):
     project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
     time_status = models.CharField(max_length=125, default="ontime")
 
+    def __str__(self):
+        return self.title
+
 class Milestonemarks(BaseModel):
     project = models.ForeignKey("core.project", on_delete=models.RESTRICT)
     comments = models.CharField(max_length=150)
     milestone = models.ForeignKey("core.milestone", on_delete=models.RESTRICT)
     marks = models.FloatField(default=50.0)
     m_distributor = models.ForeignKey("core.User", on_delete=models.RESTRICT, related_name='m_distributor')
-
