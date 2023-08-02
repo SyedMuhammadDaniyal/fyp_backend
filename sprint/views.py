@@ -444,36 +444,41 @@ class getspecificticketAPI(APIView):
             )
 
 class ticketlogAPI(APIView):
-    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
+    # permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
 
     def get(self, request):
         try:
             pro = project.objects.get(id=request.GET.get('id'))
             sp = Sprint.objects.filter(project=pro, deleted_at=None)
-            ticket = Ticket.objects.filter(sprint=sp, deleted_at=None)
-            ticket_log = TicketLog.objects.filter(ticket=ticket,deleted_at=None)
+
+            all_ticket_logs = []
+
+            for sprint in sp:
+                tickets = Ticket.objects.filter(sprint=sprint, deleted_at=None)
+                ticket_log = TicketLog.objects.filter(ticket__in=tickets, deleted_at=None)
+                all_ticket_logs.extend(ticket_log)
+
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="ticket_log.csv"'
 
             # Write data to the CSV file
             writer = csv.writer(response)
-            writer.writerow(['id','Ticket', 'To Status', 'From Status', 'Mover'])  # Write header row
+            writer.writerow(['id', 'Ticket', 'To Status', 'From Status', 'Mover', 'github_link']) 
             id = 0
-            for log in ticket_log:
-                id += 1 
-                writer.writerow([id, log.ticket.title, log.to_status, log.from_status, log.mover])  # Write data rows
+            for log in all_ticket_logs:
+                id += 1
+                writer.writerow([id, log.ticket.title, log.to_status, log.from_status, log.mover, log.github_link])
 
-            return response        
+            return response
         except Exception as e:
-            return Response(       
+            return Response(
                 {
-                "status": 404,
-                "message": "some errors",
-                "body": {},
-                "exception": str(e) 
+                    "status": 404,
+                    "message": "some errors",
+                    "body": {},
+                    "exception": str(e)
                 }
             )
-
 
 class ProjectStatusAPI(APIView):
     permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
