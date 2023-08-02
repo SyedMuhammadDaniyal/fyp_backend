@@ -429,3 +429,40 @@ class ticketlogAPI(APIView):
                 "exception": str(e) 
                 }
             )
+
+
+class ProjectStatusAPI(APIView):
+    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
+
+    def get(self, request):
+        try:
+            project_id = request.GET.get("pro_id")
+            sprints = Sprint.objects.filter(project_id=project_id, deleted_at=None)
+            
+            status_data = {
+                    Ticket.TODO: 0,
+                    Ticket.INPROGRESS: 0,
+                    Ticket.REVIEW: 0,
+                    Ticket.COMPLETED: 0,
+                }
+
+            for sprint in sprints:
+                sprint_tickets = Ticket.objects.filter(sprint=sprint, deleted_at=None)
+                for ticket in sprint_tickets:
+                    status_data[ticket.status] += 1            
+            
+            return Response({
+                "data": status_data,
+                "status": 200,
+                "message": "Success",
+                "body":{},
+                "exception": None,
+            })
+        
+        except Exception as e:
+            return Response({
+                "status": 500,
+                "message": "Internal Server Error",
+                "data": {},
+                "exception": str(e),
+            })
