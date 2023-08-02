@@ -6,19 +6,36 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class CustomUserAdmin(BaseUserAdmin):
-    # ... other admin configuration ...
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        (('Personal Info'), {'fields': ('name', 'phoneno', 'department', 'uni', 'role', 'otp')}),
+        (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        (('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
+    
+    add_fieldsets = ((None, {
+                'classes': ('wide',),
+                'fields': ('email', 'password1', 'password2', 'name', 'phoneno', 'department', 'uni', 'role', 'otp'),
+            }),
+        )
 
-    def delete_view(self, request, object_id, extra_context=None):
-        # Get the user being deleted
-        user = User.objects.get(pk=object_id)
 
-        # Check if the user is a superuser
-        if user.is_superuser and user == request.user:
-            self.message_user(request, "You cannot delete yourself as a superuser.")
-            return self.response_post_save_change(request, None)
+    list_display = ('email', 'name', 'is_staff', 'is_superuser')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+    search_fields = ('email', 'name')
 
-        return super().delete_view(request, object_id, extra_context)
+    ordering = ['id']
 
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.is_superuser and obj == request.user:
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.is_superuser and obj == request.user:
+            return False
+        return super().has_change_permission(request, obj)
+        
 # Register your models here.
 admin.site.register(supervisor)
 admin.site.register(department)
