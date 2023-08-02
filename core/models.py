@@ -83,7 +83,7 @@ class User(AbstractUser, BaseModel):
     REQUIRED_FIELDS = []
     
     def delete(self, *args, **kwargs):
-        if self.role == 'admin':
+        if self.role == 'admin' or self.is_superuser==True:
             raise PermissionDenied("Deletion of admin user not allowed www")
         super(User, self).delete(*args, **kwargs)
 
