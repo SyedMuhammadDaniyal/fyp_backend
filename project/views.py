@@ -3,9 +3,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from fyp_management.permission import IsFYPPanel, IsStudent, IsSupervisor
-from core.models import User, fyppanel, project, supervisor, teamMember
+from core.models import User, fyppanel, project, supervisor, teamMember, milestone
 from project.serializers import projectlistSerializer, projectSerializer
 from teamMember.serializers import teamMemberSerializer
+from milestone.models import Milestonemarks
 # from rest_framework.permissions import IsAuthenticated
 
 # # Create your views here.
@@ -337,6 +338,50 @@ class studentprojectwiseAPI(APIView):
                 "body": serialize.data,
                 "exception": None
             })
+        except Exception as e:
+            return Response({
+                "status": 404,
+                "message": "some exception",
+                "body": {},
+                "exception": str(e)
+            })
+
+class markasCompletedApi(APIView):
+    permission_classes = [IsAuthenticated & IsFYPPanel]
+
+    def patch(self, request):
+        try:
+            pro=project.objects.get(id=request.data.get("pro_id"), deleted_at=None)            
+            if request.data.get("status") == "completed":
+                milestone_marks = Milestonemarks.objects.filter(project=pro, deleted_at=None)
+                milestone_marks_dict = {}
+                for milestone_mark in milestone_marks:
+                    if milestone_mark.milestone_id not in milestone_marks_dict:
+                        milestone_marks_dict[milestone_mark.milestone_id] = []
+                    milestone_marks_dict[milestone_mark.milestone_id].append(milestone_mark.marks)
+                averages = {key: sum(values) / len(values) for key, values in milestone_marks_dict.items()}
+                grad = 0
+                for i in averages:
+                    grad += averages[i]
+                pro.status = request.data.get("status")
+                pro.grade = grad
+                pro.save()
+                return Response({
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None
+                })
+            else:
+                pro.status = request.data.get("status")
+                pro.grade = 0
+                pro.save()
+                return Response({
+                    "status": 200,
+                    "message": "Success",
+                    "body": {},
+                    "exception": None
+                })
         except Exception as e:
             return Response({
                 "status": 404,
