@@ -165,7 +165,7 @@ class Validate_otpAPI(APIView):
                         "University_id":user.uni.id,
                         "University_name":user.uni.name,
                     },
-                    "message": "OTP validation successful. Access token generated.",
+                    "message": "OTP verification successful",
                     "status": 200
                 })
             else:

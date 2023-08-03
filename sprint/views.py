@@ -481,7 +481,7 @@ class ticketlogAPI(APIView):
             )
 
 class ProjectStatusAPI(APIView):
-    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor)]
+    permission_classes = [IsAuthenticated & (IsFYPPanel | IsSupervisor | IsStudent)]
 
     def get(self, request):
         try:

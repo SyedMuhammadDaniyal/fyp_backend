@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from core.models import supervisor, User, teamMember, department, University
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password
+
 
 class AddSupervisorSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
@@ -23,7 +25,7 @@ class AddSupervisorSerializer(serializers.ModelSerializer):
         sp = User.objects.create(
         email=validated_data['user']['email'],
         name=validated_data['user']['name'],
-        password=validated_data['password'],
+        password=make_password(validated_data['password']),
         department = validated_data['user']['department'],
         uni = validated_data['user']['uni'],
         phoneno = validated_data['user']['phoneno'],

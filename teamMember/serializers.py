@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from core.models import teamMember, User, department, University
+from django.contrib.auth.hashers import make_password
+
 
 class teamMemberSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
@@ -22,7 +24,7 @@ class teamMemberSerializer(serializers.ModelSerializer):
         tm = User.objects.create(
         email=validated_data['user']['email'],
         name=validated_data['user']['name'],
-        password=validated_data['password'],
+        password=make_password(validated_data['password']),
         phoneno = validated_data['user']['phoneno'],
         department = validated_data['user']['department'],
         uni=validated_data['user']['uni'],
