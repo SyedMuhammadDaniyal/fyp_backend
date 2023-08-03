@@ -41,11 +41,12 @@ class projectAPIView(APIView):
             serialize = projectSerializer(data=data)
             if serialize.is_valid():
                 serialize.save()
+                sup = supervisor.objects.get(id=json_supervisor, deleted_at=None)
+                email_to = sup.user.email
                 subject = f'WELCOME IN {json_title} PROJECT'
                 email_from = request.user
                 message = f"You are added in {json_title} PROJECT By FYP Co-ordinator of {request.user.department} department of {request.user.uni}\nYou are required to start the project by adding {json_no_of_group_members} Students (team Members) init.\nPlease find below mentioned link to access the system.\n{'https://pmbotics.netlify.app/'}\nUse your login credentials which is given to you by registration email.\nBest Regards\nFYP Co-ordinator Name: {request.user.name}\nEmail Id: {email_from}\nThankyou"
-                print(message)
-                recipient_list = [request.data.get('email'), email_from]
+                recipient_list = [email_to, email_from]
                 try:
                     send_mail(subject, message, email_from, recipient_list)
                 except exceptions.GoogleAuthError:
@@ -235,6 +236,16 @@ class addteammemberAPI(APIView):
             tm = teamMember.objects.get(id=request.data.get("teammember_id"), deleted_at=None)
             tm.project = pro
             tm.save()
+            email_to = tm.user.email
+            subject = f'WELCOME IN {pro.title} PROJECT'
+            email_from = request.user
+            message = f"You are added in {pro.title} PROJECT By FYP Supervisor of {request.user.department} department of {request.user.uni}\nPlease find below mentioned link to access the system.\n{'https://pmbotics.netlify.app/'}\nUse your login credentials which is given to you by registration email.\nBest Regards\nFYP Supervisor Name: {request.user.name}\nEmail Id: {email_from}\nThankyou"
+            recipient_list = [email_to, email_from]
+            try:
+                send_mail(subject, message, email_from, recipient_list)
+            except exceptions.GoogleAuthError:
+                return Response({'error': 'Failed to send email.'}, status=500)
+
             return Response(
                     {
                     "status": 200,
@@ -270,6 +281,15 @@ class addteammemberAPI(APIView):
             else:    
                 tm.project = None
                 tm.save()
+                email_to = tm.user.email
+                subject = f'REMOVE FROM {pro.title} PROJECT'
+                email_from = request.user
+                message = f"You are removed from {pro.title} PROJECT By FYP Supervisor of {request.user.department} department of {request.user.uni}.\nPlease contact FYP Co-ordinator or wait for new project onboarding\nBest Regards\nFYP Supervisor Name: {request.user.name}\nEmail Id: {email_from}\nThankyou"
+                recipient_list = [email_to, email_from]
+                try:
+                    send_mail(subject, message, email_from, recipient_list)
+                except exceptions.GoogleAuthError:
+                    return Response({'error': 'Failed to send email.'}, status=500)
                 return Response(
                     {
                     "status": 200,
